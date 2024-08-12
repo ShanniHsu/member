@@ -10,6 +10,7 @@ import (
 const (
 	UserName     string = "root"
 	Password     string = "password"
+	NetWork      string = "tcp"
 	Addr         string = "127.0.0.1"
 	Port         int    = 3306
 	Database     string = "test"
@@ -19,8 +20,9 @@ const (
 )
 
 func Init() {
+
 	//組合sql連線字串
-	addr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True", UserName, Password, Addr, Port, Database)
+	addr := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8&parseTime=True", UserName, Password, NetWork, Addr, Port, Database)
 	//連接MySQL
 	conn, err := gorm.Open(mysql.Open(addr), &gorm.Config{})
 	if err != nil {
