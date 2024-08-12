@@ -1,14 +1,17 @@
 {
   "name": "member",
   "version": "1.0.0",
-  "mysql": {
-    "userName": "root",
-    "password": "password",
-    "addr": "127.0.0.1",
-    "port": 3306,
-    "database": "test",
-    "maxLifetime": 10,
-    "maxOpenConns": 10,
-    "maxIdleConns": 10
+  "database": {
+    "mysql": {
+      "userName": "root",
+      "password": "password",
+      "netWork": "tcp",
+      "host": "127.0.0.1",
+      "port": 3306,
+      "database": "test",
+      "maxLifetime": 10,
+      "maxOpenConns": 10,
+      "maxIdleConns": 10
+    }
   }
 }

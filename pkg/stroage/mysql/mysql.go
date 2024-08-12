@@ -2,27 +2,25 @@ package mysql
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
 )
 
-const (
-	UserName     string = "root"
-	Password     string = "password"
-	NetWork      string = "tcp"
-	Addr         string = "127.0.0.1"
-	Port         int    = 3306
-	Database     string = "test"
-	MaxLifetime  int    = 10
-	MaxOpenConns int    = 10
-	MaxIdleConns int    = 10
-)
-
 func Init() {
+	userName := viper.GetString("database.mysql.userName")
+	password := viper.GetString("database.mysql.password")
+	netWork := viper.GetString("database.mysql.netWork")
+	host := viper.GetString("database.mysql.host")
+	port := viper.GetInt("database.mysql.port")
+	database := viper.GetString("database.mysql.database")
+	maxLifetime := viper.GetInt("database.mysql.maxLifetime")
+	maxOpenConns := viper.GetInt("database.mysql.maxOpenConns")
+	maxIdleConns := viper.GetInt("database.mysql.maxIdleConns")
 
 	//組合sql連線字串
-	addr := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8&parseTime=True", UserName, Password, NetWork, Addr, Port, Database)
+	addr := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8&parseTime=True", userName, password, netWork, host, port, database)
 	//連接MySQL
 	conn, err := gorm.Open(mysql.Open(addr), &gorm.Config{})
 	if err != nil {
@@ -35,7 +33,8 @@ func Init() {
 		fmt.Println("get db failed:", err)
 		return
 	}
-	db.SetConnMaxLifetime(time.Duration(MaxLifetime) * time.Second)
-	db.SetMaxIdleConns(MaxIdleConns)
-	db.SetMaxOpenConns(MaxOpenConns)
+	db.SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
+	db.SetMaxIdleConns(maxOpenConns)
+	db.SetMaxOpenConns(maxIdleConns)
+	fmt.Println("Connect DB Successfully!")
 }
