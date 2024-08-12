@@ -20,6 +20,6 @@ func Init() {
 	}
 	pwd, _ := os.Getwd() //目前所在位置
 	fmt.Println(pwd)
-	name := vp.Get("name")
+	name := vp.GetString("name")
 	fmt.Println(name)
 }
