@@ -2,7 +2,7 @@ package main
 
 import (
 	"member/config"
-	"member/pkg/stroage/mysql"
+	"member/pkg/storage/mysql"
 )
 
 func main() {

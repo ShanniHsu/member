@@ -19,7 +19,7 @@ func Init() {
 		return
 	}
 	pwd, _ := os.Getwd() //目前所在位置
-	fmt.Println(pwd)
+	fmt.Println("目前所在位置: ", pwd)
 
 }
 
