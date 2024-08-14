@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
 )
 
 type Organization struct {
@@ -40,9 +41,20 @@ func Init() {
 	}
 
 	m := gormigrate.New(conn, gormigrate.DefaultOptions, []*gormigrate.Migration{
-		{ID: "202408131743",
-			Migrate:  nil,
-			Rollback: nil,
+		{
+			ID: "202408131743",
+			Migrate: func(tx *gorm.DB) error {
+				// it's a good pratice to copy the struct inside the function,
+				// so side effects are prevented if the original struct changes during the time
+				type user struct {
+					ID   int64 `gorm:"type:uuid;primaryKey;uniqueIndex"`
+					Name string
+				}
+				return tx.Migrator().CreateTable(&user{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropTable("users")
+			},
 		},
 		// your migrations here
 	})
@@ -62,5 +74,8 @@ func Init() {
 		// all other constraints, indexes, etc...
 		return nil
 	})
+	if err = m.Migrate(); err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
 	fmt.Println("Migrate successfully!")
 }

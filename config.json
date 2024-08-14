@@ -4,11 +4,11 @@
   "database": {
     "mysql": {
       "userName": "root",
-      "password": "password",
+      "password": "Diija1234",
       "netWork": "tcp",
       "host": "127.0.0.1",
       "port": 3306,
-      "database": "test",
+      "database": "test-member",
       "maxLifetime": 10,
       "maxOpenConns": 10,
       "maxIdleConns": 10
