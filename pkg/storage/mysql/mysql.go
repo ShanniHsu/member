@@ -5,10 +5,11 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
-func Init() {
+func NewStorage() (db *gorm.DB) {
 	userName := viper.GetString("database.mysql.userName")
 	password := viper.GetString("database.mysql.password")
 	netWork := viper.GetString("database.mysql.netWork")
@@ -21,20 +22,23 @@ func Init() {
 
 	//組合sql連線字串
 	addr := fmt.Sprintf("%s:%s@%s(%s:%d)/%s?charset=utf8&parseTime=True", userName, password, netWork, host, port, database)
+
 	//連接MySQL
 	conn, err := gorm.Open(mysql.Open(addr), &gorm.Config{})
 	if err != nil {
 		fmt.Println("connection to mysql failed:", err)
-		return
+		log.Fatal("connection to mysql failed:", err)
 	}
+
 	//設定ConnMaxLifetime/MaxIdleConns/MaxOpenConns
-	db, err1 := conn.DB()
-	if err1 != nil {
+	sqlDb, err := conn.DB()
+	if err != nil {
 		fmt.Println("get db failed:", err)
-		return
+		log.Fatal("get db failed:", err)
 	}
-	db.SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
-	db.SetMaxIdleConns(maxOpenConns)
-	db.SetMaxOpenConns(maxIdleConns)
+	sqlDb.SetConnMaxLifetime(time.Duration(maxLifetime) * time.Second)
+	sqlDb.SetMaxIdleConns(maxOpenConns)
+	sqlDb.SetMaxOpenConns(maxIdleConns)
 	fmt.Println("Connect DB Successfully!")
+	return conn
 }

@@ -2,12 +2,12 @@ package main
 
 import (
 	"member/config"
+	"member/pkg/storage"
 	"member/pkg/storage/migrate"
-	"member/pkg/storage/mysql"
 )
 
 func main() {
 	config.Init()
-	mysql.Init()
+	storage.Init()
 	migrate.Init()
 }
