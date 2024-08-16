@@ -107,7 +107,6 @@ func Init() {
 }
 
 func NewMigrate(db *gorm.DB, options *gormigrate.Options, list []*gormigrate.Migration) {
-
 	m := gormigrate.New(db, options, list)
 	if err := m.Migrate(); err != nil {
 		log.Fatalf("Migration failed: %v", err)
