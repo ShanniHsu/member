@@ -8,8 +8,8 @@
       "netWork": "tcp",
       "host": "127.0.0.1",
       "port": 3306,
-      "database": "test",
-      "maxLifetime": 10,
+      "database": "test-member",
+      "maxLifetime": 180,
       "maxOpenConns": 10,
       "maxIdleConns": 10
     }
