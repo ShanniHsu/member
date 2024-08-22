@@ -11,5 +11,10 @@ func main() {
 	config.Init()
 	storage.Init()
 	migrate.Init()
-	router.Init()
+	//router.Init()
+
+	//Test
+	r := router.SetupRouter()
+	r = router.PostUser(r)
+	r.Run(":8080")
 }
