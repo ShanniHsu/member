@@ -19,6 +19,15 @@ func TestNonPalindrome(t *testing.T) {
 	assert.False(t, IsPalindrome("palindrome"))
 }
 
+//func TestSomething(t *testing.T) {
+//	// 創建一個assert實例，只需傳參數testing.T一次
+//	assert := assert.New(t)
+//
+//	assert.True(IsPalindrome("detartrated"))
+//	assert.True(IsPalindrome("kayak"))
+//	assert.False(IsPalindrome("palindrome"))
+//}
+
 //用go的test
 //func TestIsPalindrome(t *testing.T) {
 //	//因為是回文字符串，如果是false代表有問題
