@@ -8,12 +8,14 @@ import "fmt"
 // 在這個simplefactory包中只有API接口和NewAPI函數為包外可見，封裝了實現細節。
 
 // API is interface
+// 這個對簡單工廠模式來說是產品(Product) shanni
 type API interface {
 	// 告訴別人你要用哪一種打招呼方式
 	Say(name string) string
 }
 
 // NewAPI return API instance by type
+// 這個對簡單工廠模式來說是工廠(Factory) shanni
 func NewAPI(t int) API {
 	if t == 1 {
 		return &hiAPI{}
@@ -25,6 +27,7 @@ func NewAPI(t int) API {
 
 /*有Hi這個方法 Class1*/
 // hiAPI is one of API implement
+// 這個對簡單工廠模式來說是產品(Product) shanni
 type hiAPI struct{}
 
 // Say hi to name
@@ -34,6 +37,7 @@ func (*hiAPI) Say(name string) string {
 
 /*有Hello這個方法 Class2*/
 // helloAPI is another API implement
+// 這個對簡單工廠模式來說是產品(Product) shanni
 type helloAPI struct{}
 
 // Say hello to name
