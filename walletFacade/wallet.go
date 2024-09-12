@@ -3,7 +3,7 @@ package walletFacade
 import "fmt"
 
 // Complex subsystem parts
-
+// Credit/Debit balance
 type Wallet struct {
 	balance int
 }

@@ -3,7 +3,7 @@ package walletFacade
 import "fmt"
 
 // Complex subsystem parts
-
+// Check security PIN
 type SecurityCode struct {
 	code int
 }

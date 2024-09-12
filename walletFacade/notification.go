@@ -2,6 +2,8 @@ package walletFacade
 
 import "fmt"
 
+// Complex subsystem parts
+// Send notification
 type Notification struct{}
 
 func (n *Notification) sendWalletCreditNotification() {

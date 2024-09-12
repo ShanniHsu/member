@@ -3,6 +3,7 @@ package walletFacade
 import "fmt"
 
 // Complex subsystem parts
+// Make ledge entry
 
 // ledger 分類帳
 type Ledger struct{}

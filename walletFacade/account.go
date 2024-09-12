@@ -3,7 +3,7 @@ package walletFacade
 import "fmt"
 
 // Complex subsystem parts
-
+// Check account
 type Account struct {
 	name string
 }

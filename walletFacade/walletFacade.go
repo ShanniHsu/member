@@ -3,7 +3,7 @@ package walletFacade
 import "fmt"
 
 // https://refactoring.guru/design-patterns/facade/go/example
-
+// 對Client來說是可以用newWalletFacade
 type WalletFacade struct {
 	account      *Account
 	wallet       *Wallet
@@ -12,6 +12,7 @@ type WalletFacade struct {
 	ledger       *Ledger
 }
 
+// 輸入信用卡、安全碼詳情
 func newWalletFacade(accountID string, code int) *WalletFacade {
 	fmt.Println("Starting create account")
 	walletFacade := &WalletFacade{
@@ -25,6 +26,7 @@ func newWalletFacade(accountID string, code int) *WalletFacade {
 	return walletFacade
 }
 
+// 增加支付金額
 func (w *WalletFacade) addMoneyToWallet(accountID string, securityCode int, amount int) error {
 	fmt.Println("Starting add money to wallet")
 	err := w.account.checkAccount(accountID)
@@ -42,6 +44,7 @@ func (w *WalletFacade) addMoneyToWallet(accountID string, securityCode int, amou
 	return nil
 }
 
+// 信用卡付款
 func (w *WalletFacade) deductMoneyFromWallet(accountID string, securityCode int, amount int) error {
 	fmt.Println("Starting debit money from wallet")
 	err := w.account.checkAccount(accountID)
