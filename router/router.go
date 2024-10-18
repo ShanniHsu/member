@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"member/router/api/content/register"
 	"member/router/middleware"
 	"net/http"
 )
@@ -26,6 +27,21 @@ func newRouter() *gin.Engine {
 		panic("errrrrrr")
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
+		})
+	})
+
+	router.POST("/register", func(c *gin.Context) {
+		var req register.Request
+		err := c.ShouldBindJSON(&req)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Register successfully!",
 		})
 	})
 	return router
