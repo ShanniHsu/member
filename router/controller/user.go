@@ -18,7 +18,8 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
-	resp, err := repository.UerRepository().GetUserByAccount(models.User{}, req.Account)
+	api := repository.NewUserRepository()
+	resp, err := api.GetUserByAccount(models.User{}, req.Account)
 	fmt.Println("resp: ", resp, ";", "err: ", err)
 
 	c.JSON(http.StatusOK, gin.H{
