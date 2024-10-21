@@ -1,8 +1,11 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"member/models"
 	"member/router/api/content/register"
+	"member/router/repository"
 	"net/http"
 )
 
@@ -15,6 +18,8 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
+	resp, err := repository.UerRepository().GetUserByAccount(models.User{}, req.Account)
+	fmt.Println("resp: ", resp, ";", "err: ", err)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Register successfully!",
