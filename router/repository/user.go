@@ -3,7 +3,6 @@ package repository
 import (
 	"gorm.io/gorm"
 	"member/models"
-	"member/pkg/storage"
 )
 
 // method
@@ -17,8 +16,7 @@ type userRepository struct {
 }
 
 // use userRepository to return UserRepository(interface)
-func NewUserRepository() UserRepository {
-	db := storage.InitStorage.GetDBConnect()
+func NewUserRepository(db *gorm.DB) UserRepository {
 	return userRepository{
 		DB: db,
 	}

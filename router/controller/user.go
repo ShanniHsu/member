@@ -18,7 +18,8 @@ func Register(c *gin.Context) {
 		})
 		return
 	}
-	api := repository.NewUserRepository()
+
+	api := repository.NewRepository().UserRepository
 	resp, err := api.GetUserByAccount(models.User{}, req.Account)
 	fmt.Println("resp: ", resp, ";", "err: ", err)
 
