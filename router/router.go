@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"member/router/controller"
+	"member/router/app/controller"
 	"member/router/middleware"
 	"net/http"
 )
