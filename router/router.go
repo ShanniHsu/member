@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"member/router/app/controller"
+	"member/router/app/api/a1"
 	"member/router/middleware"
 	"net/http"
 )
@@ -29,7 +29,6 @@ func newRouter() *gin.Engine {
 			"message": "pong",
 		})
 	})
-
-	router.POST("/register", controller.Register)
+	a1.Init(router)
 	return router
 }
