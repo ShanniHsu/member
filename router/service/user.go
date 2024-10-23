@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"member/models"
 	"member/router/app/content/register"
@@ -22,8 +23,25 @@ func NewUserService(repo repository.Repo) User {
 }
 
 func (s userService) Register(req register.Request) (err error) {
-	fmt.Println("req: ", req)
-	resp, err := s.repo.UserRepository.GetUserByAccount(models.User{}, req.Account)
-	fmt.Println("resp: ", resp, ";", "err: ", err)
+
+	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
+	fmt.Println(resp.ID)
+	if resp.ID != 0 {
+		err = errors.New("The account is existed!")
+		return
+	}
+	//if the account is not existed
+	if resp.ID == 0 {
+		var user = new(models.User)
+		user = &models.User{
+			Account:  req.Account,
+			Password: req.Password,
+			Nickname: req.Account,
+		}
+		err = s.repo.UserRepository.Create(user)
+		if err != nil {
+			return err
+		}
+	}
 	return
 }
