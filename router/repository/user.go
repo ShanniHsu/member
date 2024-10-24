@@ -7,7 +7,7 @@ import (
 
 // method
 type UserRepository interface {
-	GetUserByAccount(account string) (resp models.User, err error)
+	GetUserByAccount(account string) (resp *models.User, err error)
 	Create(user *models.User) (err error)
 }
 
@@ -24,8 +24,8 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 // Mothod of UserRepository(interface)
-func (r userRepository) GetUserByAccount(account string) (resp models.User, err error) {
-	err = r.DB.Model(&models.User{}).First(&resp).Where("account = ?", account).Error
+func (r userRepository) GetUserByAccount(account string) (resp *models.User, err error) {
+	err = r.DB.Where("account = ?", account).First(&resp).Error
 	return resp, err
 }
 
