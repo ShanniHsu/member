@@ -8,13 +8,17 @@ import (
 
 var ctx = context.Background()
 
-func ExampleClient() {
-	rdb := redis.NewClient(&redis.Options{
+func NewStorage() (rdb *redis.Client) {
+	rdb = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
+	return rdb
+}
 
+func ExampleClient() {
+	rdb := NewStorage()
 	err := rdb.Set(ctx, "key", "value", 0).Err()
 	if err != nil {
 		panic(err)
