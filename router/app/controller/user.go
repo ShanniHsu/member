@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func Register(c *gin.Context) {
+func (c appController) Register(ctx *gin.Context) {
 	var req register.Request
-	err := c.ShouldBindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
@@ -21,12 +21,12 @@ func Register(c *gin.Context) {
 	api := service.NewUserService(repo)
 	err = api.Register(req)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Register successfully!",
 	})
 	return
