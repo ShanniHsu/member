@@ -9,7 +9,7 @@ import (
 )
 
 type User interface {
-	Register(req register.Request) (err error)
+	Register(req *register.Request) (err error)
 }
 
 type userService struct {
@@ -22,7 +22,7 @@ func NewUserService(repo repository.Repo) User {
 	}
 }
 
-func (s userService) Register(req register.Request) (err error) {
+func (s userService) Register(req *register.Request) (err error) {
 
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
 	if resp.ID != 0 {

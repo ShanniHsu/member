@@ -9,7 +9,7 @@ import (
 )
 
 func (c appController) Register(ctx *gin.Context) {
-	var req register.Request
+	req := new(register.Request)
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
