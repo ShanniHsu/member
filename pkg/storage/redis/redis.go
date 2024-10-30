@@ -4,15 +4,21 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"github.com/spf13/viper"
 )
 
 var ctx = context.Background()
 
 func NewStorage() (rdb *redis.Client) {
+	host := viper.GetString("database.redis.host")
+	port := viper.GetString("database.redis.port")
+	password := viper.GetString("database.redis.password")
+	dbName := viper.GetInt("database.redis.dbName")
+
 	rdb = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     host + port,
+		Password: password, // no password set
+		DB:       dbName,   // use default DB
 	})
 	return rdb
 }

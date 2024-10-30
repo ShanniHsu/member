@@ -34,4 +34,9 @@ func SetDefault() {
 	viper.SetDefault("database.mysql.maxLifetime", 10)
 	viper.SetDefault("database.mysql.maxOpenConns", 10)
 	viper.SetDefault("database.mysql.maxIdleConns", 10)
+	//redis
+	viper.SetDefault("database.redis.host", "localhost")
+	viper.SetDefault("database.redis.port", "6379")
+	viper.SetDefault("database.redis.password", "")
+	viper.SetDefault("database.redis.dbName", 0)
 }

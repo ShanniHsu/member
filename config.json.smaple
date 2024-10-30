@@ -12,6 +12,12 @@
       "maxLifetime": 180,
       "maxOpenConns": 10,
       "maxIdleConns": 10
+    },
+    "redis": {
+      "host": "localhost",
+      "port": 6379,
+      "password": "",
+      "dbName": 0
     }
   }
 }
