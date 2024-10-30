@@ -12,4 +12,5 @@ func Init(router *gin.Engine) {
 	newUserService := service.NewUserService(newRepo)
 	api := controller.NewAppController(newUserService)
 	router.POST("/register", api.Register)
+	router.POST("/login", api.Login)
 }

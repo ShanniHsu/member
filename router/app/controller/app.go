@@ -7,6 +7,7 @@ import (
 
 type AppController interface {
 	Register(c *gin.Context)
+	Login(c *gin.Context)
 }
 
 type appController struct {

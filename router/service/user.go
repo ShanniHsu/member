@@ -4,12 +4,14 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"member/models"
+	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
 )
 
 type User interface {
 	Register(req *register.Request) (err error)
+	Login(req *login.Request) (err error)
 }
 
 type userService struct {
@@ -44,6 +46,19 @@ func (s userService) Register(req *register.Request) (err error) {
 				return err
 			}
 		}
+	}
+	return
+}
+
+func (s userService) Login(req *login.Request) (err error) {
+	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		err = errors.New("Authentication failed!")
+		return
+	}
+	if resp.Password != req.Password {
+		err = errors.New("Authentication failed!")
+		return
 	}
 	return
 }
