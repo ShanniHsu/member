@@ -38,6 +38,8 @@ func JWTAuth() gin.HandlerFunc {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "Token is invalid or expired!",
 			})
+			ctx.Abort()
+			return
 		}
 	}
 }
