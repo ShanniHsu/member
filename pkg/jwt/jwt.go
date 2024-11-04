@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -18,7 +19,6 @@ type AuthClaims struct {
 }
 
 // Decode jwt
-
 func JWTAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// 通過http header中的token解析認證
@@ -42,6 +42,22 @@ func JWTAuth() gin.HandlerFunc {
 			return
 		}
 	}
+}
+
+// 獲取使用者資訊
+func GetUserInfo(ctx *gin.Context) (*AuthClaims, error) {
+	// 通過http header中的token解析來認證
+	token := ctx.Request.Header.Get("token")
+	if token == "" {
+		return nil, fmt.Errorf("no jwt token")
+	}
+
+	claim, err := parseToken(token)
+	if err != nil {
+		return nil, fmt.Errorf("bad jwt: %s", err)
+	}
+
+	return claim, nil
 }
 
 // 解析jwt token
