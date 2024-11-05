@@ -1,16 +1,18 @@
 package jwt
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"os"
 	"time"
 )
 
-var Secret = os.Getenv("SECRET")
-var Issuer = os.Getenv("Issuer")
+var Secret = "it"
+var Issuer = "ithome"
 
 type AuthClaims struct {
 	jwt.RegisteredClaims
@@ -76,8 +78,12 @@ func parseToken(token string) (*AuthClaims, error) {
 
 // 產生jwt
 func GenerateJWT(id int64, account string) (tokenString string, err error) {
+	// 生成 ECDSA 私鑰(此處使用 P-256 橢圓曲線)
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return
+	}
 	expiresAt := time.Now().Add(10 * time.Second)
-
 	claims := AuthClaims{
 		ID:      id,
 		Account: account,
@@ -86,10 +92,12 @@ func GenerateJWT(id int64, account string) (tokenString string, err error) {
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
 	}
+	// 建立Token，並設置簽名方法為ES256 (ECDSA SHA-256)
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tokenString, err = token.SignedString([]byte(Secret))
+	tokenString, err = token.SignedString(privateKey)
+	fmt.Println("tokenString: ", tokenString)
 	if err != nil {
-		return "", err
+		return
 	}
-	return tokenString, nil
+	return
 }
