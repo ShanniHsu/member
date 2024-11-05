@@ -51,7 +51,7 @@ func (c appController) Login(ctx *gin.Context) {
 		})
 		return
 	}
-	err = c.userService.Login(req)
+	jwtToken, err := c.userService.Login(req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -59,7 +59,8 @@ func (c appController) Login(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Login successfully!",
+		"message":  "Login successfully!",
+		"jwtToken": jwtToken,
 	})
 	return
 }

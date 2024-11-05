@@ -15,7 +15,7 @@ var Issuer = os.Getenv("Issuer")
 type AuthClaims struct {
 	jwt.RegisteredClaims
 	Account string
-	ID      int
+	ID      int64
 }
 
 // Decode jwt
@@ -75,19 +75,19 @@ func parseToken(token string) (*AuthClaims, error) {
 }
 
 // 產生jwt
-func GenerateJWT(id int, account string) (string, error) {
-	expirseAt := time.Now().Add(10 * time.Second)
+func GenerateJWT(id int64, account string) (tokenString string, err error) {
+	expiresAt := time.Now().Add(10 * time.Second)
 
 	claims := AuthClaims{
 		ID:      id,
 		Account: account,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    Issuer,
-			ExpiresAt: jwt.NewNumericDate(expirseAt),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tokenString, err := token.SignedString([]byte(Secret))
+	tokenString, err = token.SignedString([]byte(Secret))
 	if err != nil {
 		return "", err
 	}

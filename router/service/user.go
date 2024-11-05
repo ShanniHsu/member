@@ -2,8 +2,10 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"member/models"
+	"member/pkg/jwt"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
@@ -11,7 +13,7 @@ import (
 
 type User interface {
 	Register(req *register.Request) (err error)
-	Login(req *login.Request) (err error)
+	Login(req *login.Request) (jwtToken string, err error)
 }
 
 type userService struct {
@@ -50,7 +52,7 @@ func (s userService) Register(req *register.Request) (err error) {
 	return
 }
 
-func (s userService) Login(req *login.Request) (err error) {
+func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Authentication failed!")
@@ -59,6 +61,11 @@ func (s userService) Login(req *login.Request) (err error) {
 	if resp.Password != req.Password {
 		err = errors.New("Authentication failed!")
 		return
+	}
+
+	jwtToken, err = jwt.GenerateJWT(resp.ID, resp.Account)
+	if err != nil {
+		fmt.Println("jwt err: ", err)
 	}
 	return
 }
