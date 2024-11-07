@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-var Secret = "it"
+var privateKey *ecdsa.PrivateKey
 var Issuer = "ithome"
 
 type AuthClaims struct {
@@ -65,7 +65,7 @@ func GetUserInfo(ctx *gin.Context) (*AuthClaims, error) {
 // 解析jwt token
 func parseToken(token string) (*AuthClaims, error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &AuthClaims{}, func(token *jwt.Token) (i interface{}, e error) {
-		return []byte(Secret), nil
+		return privateKey, nil
 	})
 
 	if err == nil && jwtToken != nil {
@@ -79,11 +79,11 @@ func parseToken(token string) (*AuthClaims, error) {
 // 產生jwt
 func GenerateJWT(id int64, account string) (tokenString string, err error) {
 	// 生成 ECDSA 私鑰(此處使用 P-256 橢圓曲線)
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	privateKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return
 	}
-	expiresAt := time.Now().Add(10 * time.Second)
+	expiresAt := time.Now().Add(10 * time.Minute)
 	claims := AuthClaims{
 		ID:      id,
 		Account: account,
