@@ -65,13 +65,16 @@ func GetUserInfo(ctx *gin.Context) (*AuthClaims, error) {
 // 解析jwt token
 func parseToken(token string) (*AuthClaims, error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &AuthClaims{}, func(token *jwt.Token) (i interface{}, e error) {
-		return privateKey, nil
+		return &privateKey.PublicKey, nil
 	})
 
-	if err == nil && jwtToken != nil {
-		if claim, ok := jwtToken.Claims.(*AuthClaims); ok && jwtToken.Valid {
-			return claim, nil
-		}
+	if err != nil {
+		fmt.Println("ECDSA Token verification failed:", err)
+	} else if jwtToken.Valid {
+		fmt.Println("ECDSA Token is valid: ", jwtToken.Claims)
+
+	} else {
+		fmt.Println("ECDSA Token is invalid")
 	}
 	return nil, err
 }
@@ -95,7 +98,6 @@ func GenerateJWT(id int64, account string) (tokenString string, err error) {
 	// 建立Token，並設置簽名方法為ES256 (ECDSA SHA-256)
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 	tokenString, err = token.SignedString(privateKey)
-	fmt.Println("tokenString: ", tokenString)
 	if err != nil {
 		return
 	}
