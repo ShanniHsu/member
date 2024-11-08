@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -47,14 +48,14 @@ func JWTAuth() gin.HandlerFunc {
 }
 
 // 獲取使用者資訊
-func GetUserInfo(ctx *gin.Context) (*AuthClaims, error) {
+func GetUserInfo(ctx *gin.Context) (claim interface{}, err error) {
 	// 通過http header中的token解析來認證
 	token := ctx.Request.Header.Get("token")
 	if token == "" {
 		return nil, fmt.Errorf("no jwt token")
 	}
 
-	claim, err := parseToken(token)
+	claim, err = parseToken(token)
 	if err != nil {
 		return nil, fmt.Errorf("bad jwt: %s", err)
 	}
@@ -63,20 +64,22 @@ func GetUserInfo(ctx *gin.Context) (*AuthClaims, error) {
 }
 
 // 解析jwt token
-func parseToken(token string) (*AuthClaims, error) {
+func parseToken(token string) (authClaims interface{}, err error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &AuthClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return &privateKey.PublicKey, nil
 	})
 
 	if err != nil {
-		fmt.Println("ECDSA Token verification failed:", err)
+		return
 	} else if jwtToken.Valid {
-		fmt.Println("ECDSA Token is valid: ", jwtToken.Claims)
-
+		fmt.Printf("authClaims:%+v\n", authClaims)
+		fmt.Printf("ECDSA Token is valid:%+v\n ", jwtToken.Claims)
+		authClaims = jwtToken.Claims
 	} else {
-		fmt.Println("ECDSA Token is invalid")
+		err = errors.New("ECDSA Token is invalid")
+		return
 	}
-	return nil, err
+	return
 }
 
 // 產生jwt
