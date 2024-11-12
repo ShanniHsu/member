@@ -17,8 +17,7 @@ var Issuer = "ithome"
 
 type AuthClaims struct {
 	jwt.RegisteredClaims
-	Account string
-	ID      int64
+	Token string
 }
 
 // Decode jwt
@@ -83,7 +82,7 @@ func parseToken(token string) (authClaims interface{}, err error) {
 }
 
 // 產生jwt
-func GenerateJWT(id int64, account string) (tokenString string, err error) {
+func GenerateJWT(token string) (tokenString string, err error) {
 	// 生成 ECDSA 私鑰(此處使用 P-256 橢圓曲線)
 	privateKey, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -91,16 +90,15 @@ func GenerateJWT(id int64, account string) (tokenString string, err error) {
 	}
 	expiresAt := time.Now().Add(10 * time.Minute)
 	claims := AuthClaims{
-		ID:      id,
-		Account: account,
+		Token: token,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    Issuer,
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},
 	}
 	// 建立Token，並設置簽名方法為ES256 (ECDSA SHA-256)
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tokenString, err = token.SignedString(privateKey)
+	jwtToken := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	tokenString, err = jwtToken.SignedString(privateKey)
 	if err != nil {
 		return
 	}

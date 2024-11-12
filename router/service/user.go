@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/jwt"
@@ -63,9 +62,9 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 		return
 	}
 
-	jwtToken, err = jwt.GenerateJWT(resp.ID, resp.Account)
+	jwtToken, err = jwt.GenerateJWT("token")
 	if err != nil {
-		fmt.Println("jwt err: ", err)
+		return
 	}
 	return
 }
