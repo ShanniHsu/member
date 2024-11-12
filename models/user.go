@@ -7,7 +7,8 @@ type User struct {
 	Account   string    `gorm:"account" json:"account" comment:"帳號"`
 	Password  string    `gorm:"password" json:"password" comment:"密碼"`
 	Nickname  string    `gorm:"nickname" json:"nickname" comment:"綽號"`
-	Status    int64     `gorm:"status" jason:"status" comment:"狀態"`
-	CreatedAt time.Time `gorm:"created_at" json:"created_at"`
-	UpdatedAt time.Time `gorm:"updated_at" json:"updated_at"`
+	Status    int64     `gorm:"status" json:"status" comment:"狀態"`
+	Token     string    `gorm:"token" json:"token" comment:"Token"`
+	CreatedAt time.Time `gorm:"created_at" json:"created_at" comment:"創建日期"`
+	UpdatedAt time.Time `gorm:"updated_at" json:"updated_at" comment:"更新日期"`
 }
