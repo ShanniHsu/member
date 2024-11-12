@@ -2,9 +2,11 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/jwt"
+	"member/pkg/uuid"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
@@ -61,6 +63,9 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 		err = errors.New("Authentication failed!")
 		return
 	}
+
+	token := uuid.GenerateUuid()
+	fmt.Println("token: ", token)
 
 	jwtToken, err = jwt.GenerateJWT("token")
 	if err != nil {
