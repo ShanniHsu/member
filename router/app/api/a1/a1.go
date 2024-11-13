@@ -17,9 +17,9 @@ func Init(router *gin.Engine) {
 	router.POST("/register", api.Register)
 	router.POST("/login", api.Login)
 
-	user := router.Group("/user")
-	user.Use(middleware.Auth())
-	user.GET("/info", func(ctx *gin.Context) {
+	auth := router.Group("/auth")
+	auth.Use(middleware.Auth())
+	auth.GET("/info", func(ctx *gin.Context) {
 		claim, err := jwt.GetUserInfo(ctx)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
