@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"net/http"
 	"time"
 )
 
@@ -20,41 +19,15 @@ type AuthClaims struct {
 	Token string
 }
 
-// Decode jwt
-func JWTAuth() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		// 通過http header中的token解析認證
-		token := ctx.Request.Header.Get("token")
-		if token == "" {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "not jwt token!",
-			})
-			// 終止後續的handler繼續執行
-			ctx.Abort()
-			return
-		}
-
-		// 解析jwt是否正確，如果不正確則提前結束，正確就繼續
-		_, err := parseToken(token)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": "Token is invalid or expired!",
-			})
-			ctx.Abort()
-			return
-		}
-	}
-}
-
 // 獲取使用者資訊
 func GetUserInfo(ctx *gin.Context) (claim interface{}, err error) {
 	// 通過http header中的token解析來認證
-	token := ctx.Request.Header.Get("token")
+	token := ctx.Request.Header.Get("Authorization")
 	if token == "" {
 		return nil, fmt.Errorf("no jwt token")
 	}
 
-	claim, err = parseToken(token)
+	claim, err = ParseToken(token[7:])
 	if err != nil {
 		return nil, fmt.Errorf("bad jwt: %s", err)
 	}
@@ -63,7 +36,7 @@ func GetUserInfo(ctx *gin.Context) (claim interface{}, err error) {
 }
 
 // 解析jwt token
-func parseToken(token string) (authClaims interface{}, err error) {
+func ParseToken(token string) (authClaims interface{}, err error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &AuthClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return &privateKey.PublicKey, nil
 	})

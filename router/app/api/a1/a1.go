@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"member/pkg/jwt"
 	"member/router/app/controller"
+	"member/router/app/middleware"
 	"member/router/repository"
 	"member/router/service"
 	"net/http"
@@ -17,7 +18,7 @@ func Init(router *gin.Engine) {
 	router.POST("/login", api.Login)
 
 	user := router.Group("/user")
-	user.Use(jwt.JWTAuth())
+	user.Use(middleware.Auth())
 	user.GET("/info", func(ctx *gin.Context) {
 		claim, err := jwt.GetUserInfo(ctx)
 		if err != nil {
