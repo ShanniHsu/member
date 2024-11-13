@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/jwt"
@@ -64,10 +63,20 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 		return
 	}
 
+	// 給登入者身份識別
 	token := uuid.GenerateUuid()
-	fmt.Println("token: ", token)
 
-	jwtToken, err = jwt.GenerateJWT("token")
+	newData := map[string]interface{}{
+		"token": token,
+	}
+
+	err = s.repo.UserRepository.Update(resp, newData)
+	if err != nil {
+		err = errors.New("Update user failed!")
+		return
+	}
+
+	jwtToken, err = jwt.GenerateJWT(token)
 	if err != nil {
 		return
 	}

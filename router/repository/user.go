@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	GetUserByAccount(account string) (resp *models.User, err error)
 	Create(user *models.User) (err error)
+	Update(user *models.User, newData map[string]interface{}) (err error)
 }
 
 // the request that is applied the method
@@ -31,4 +32,8 @@ func (r userRepository) GetUserByAccount(account string) (resp *models.User, err
 
 func (r userRepository) Create(user *models.User) (err error) {
 	return r.DB.Create(&user).Error
+}
+
+func (r userRepository) Update(user *models.User, newData map[string]interface{}) (err error) {
+	return r.DB.Model(&user).Updates(newData).Error
 }
