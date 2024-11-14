@@ -7,7 +7,8 @@ import (
 
 // method
 type UserRepository interface {
-	GetUserByAccount(account string) (resp *models.User, err error)
+	GetUserByAccount(account string) (user *models.User, err error)
+	GetUserByID(id int64) (resp *models.User, err error)
 	Create(user *models.User) (err error)
 	Update(user *models.User, newData map[string]interface{}) (err error)
 }
@@ -25,9 +26,15 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 }
 
 // Mothod of UserRepository(interface)
-func (r userRepository) GetUserByAccount(account string) (resp *models.User, err error) {
-	err = r.DB.Where("account = ?", account).First(&resp).Error
-	return resp, err
+func (r userRepository) GetUserByAccount(account string) (user *models.User, err error) {
+	err = r.DB.Where("account = ?", account).First(&user).Error
+	return
+}
+
+func (r userRepository) GetUserByID(id int64) (user *models.User, err error) {
+	user = new(models.User)
+	err = r.DB.Where("id = ?", id).First(&user).Error
+	return
 }
 
 func (r userRepository) Create(user *models.User) (err error) {
