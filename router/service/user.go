@@ -6,6 +6,7 @@ import (
 	"member/models"
 	"member/pkg/jwt"
 	"member/pkg/uuid"
+	"member/router/app/content/get_user"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
@@ -14,6 +15,7 @@ import (
 type User interface {
 	Register(req *register.Request) (err error)
 	Login(req *login.Request) (jwtToken string, err error)
+	GetUserInfo(id int64) (resp *get_user.Response, err error)
 }
 
 type userService struct {
@@ -80,5 +82,23 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 	if err != nil {
 		return
 	}
+	return
+}
+
+func (s userService) GetUserInfo(id int64) (resp *get_user.Response, err error) {
+	var user *models.User
+	user, err = s.repo.UserRepository.GetUserByID(id)
+	if err != nil {
+		err = errors.New("Get user failed!")
+		return
+	}
+
+	resp = &get_user.Response{
+		Account:  user.Account,
+		Password: user.Password,
+		Nickname: user.Nickname,
+		Status:   user.Status,
+	}
+
 	return
 }
