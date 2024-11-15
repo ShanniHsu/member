@@ -12,7 +12,12 @@ import (
 )
 
 var privateKey *ecdsa.PrivateKey
-var Issuer = "ithome"
+var Issuer string
+
+func InitJwt() {
+	privateKey = new(ecdsa.PrivateKey)
+	Issuer = "ithome"
+}
 
 type AuthClaims struct {
 	jwt.RegisteredClaims
@@ -44,8 +49,6 @@ func ParseToken(token string) (authClaims interface{}, err error) {
 	if err != nil {
 		return
 	} else if jwtToken.Valid {
-		fmt.Printf("authClaims:%+v\n", authClaims)
-		fmt.Printf("ECDSA Token is valid:%+v\n ", jwtToken.Claims)
 		authClaims = jwtToken.Claims
 	} else {
 		err = errors.New("ECDSA Token is invalid")
