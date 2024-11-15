@@ -8,7 +8,8 @@ import (
 // method
 type UserRepository interface {
 	GetUserByAccount(account string) (user *models.User, err error)
-	GetUserByID(id int64) (resp *models.User, err error)
+	GetUserByID(id int64) (user *models.User, err error)
+	GetUserByToken(token string) (user *models.User, err error)
 	Create(user *models.User) (err error)
 	Update(user *models.User, newData map[string]interface{}) (err error)
 }
@@ -34,6 +35,11 @@ func (r userRepository) GetUserByAccount(account string) (user *models.User, err
 func (r userRepository) GetUserByID(id int64) (user *models.User, err error) {
 	user = new(models.User)
 	err = r.DB.Where("id = ?", id).First(&user).Error
+	return
+}
+func (r userRepository) GetUserByToken(token string) (user *models.User, err error) {
+	user = new(models.User)
+	err = r.DB.Where("token = ?", token).First(&user).Error
 	return
 }
 
