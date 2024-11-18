@@ -2,6 +2,7 @@ package main
 
 import (
 	"member/config"
+	"member/pkg/shutdown"
 	"member/pkg/storage"
 	"member/pkg/storage/migrate"
 	"member/pkg/storage/redis"
@@ -13,5 +14,6 @@ func main() {
 	config.Init()
 	storage.Init()
 	migrate.Init()
-	router.Init()
+	go router.Init()
+	shutdown.Init()
 }
