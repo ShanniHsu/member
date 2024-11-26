@@ -41,7 +41,7 @@ func GetUserInfo(ctx *gin.Context) (claim interface{}, err error) {
 }
 
 // 解析jwt token
-func ParseToken(token string) (authClaims interface{}, err error) {
+func ParseToken(token string) (authClaims *AuthClaims, err error) {
 	jwtToken, err := jwt.ParseWithClaims(token, &AuthClaims{}, func(token *jwt.Token) (i interface{}, e error) {
 		return &privateKey.PublicKey, nil
 	})
@@ -49,7 +49,7 @@ func ParseToken(token string) (authClaims interface{}, err error) {
 	if err != nil {
 		return
 	} else if jwtToken.Valid {
-		authClaims = jwtToken.Claims
+		authClaims = jwtToken.Claims.(*AuthClaims)
 	} else {
 		err = errors.New("ECDSA Token is invalid")
 		return
