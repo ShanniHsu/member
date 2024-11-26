@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/jwt"
@@ -16,7 +17,7 @@ type User interface {
 	Register(req *register.Request) (err error)
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
-	GetUserInfo(id int64) (resp *get_user.Response, err error)
+	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
 }
 
 type userService struct {
@@ -95,13 +96,17 @@ func (s userService) AuthBearerToken(token string) (user *models.User, err error
 	return
 }
 
-func (s userService) GetUserInfo(id int64) (resp *get_user.Response, err error) {
-	var user *models.User
-	user, err = s.repo.UserRepository.GetUserByID(id)
-	if err != nil {
-		err = errors.New("Get user failed!")
-		return
+func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error) {
+	var user = new(models.User)
+	ctxUser, exist := ctx.Get("user")
+	if exist {
+		user = ctxUser.(*models.User)
 	}
+	//user, err = s.repo.UserRepository.GetUserByID(id)
+	//if err != nil {
+	//	err = errors.New("Get user failed!")
+	//	return
+	//}
 
 	resp = &get_user.Response{
 		Account:  user.Account,

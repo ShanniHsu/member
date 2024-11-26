@@ -5,7 +5,6 @@ import (
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"net/http"
-	"strconv"
 )
 
 func (c appController) Register(ctx *gin.Context) {
@@ -67,23 +66,23 @@ func (c appController) Login(ctx *gin.Context) {
 }
 
 func (c appController) GetUserInfo(ctx *gin.Context) {
-	id := ctx.Param("id")
-	if id == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID can't be null!",
-		})
-		return
-	}
+	//id := ctx.Param("id")
+	//if id == "" {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		"message": "ID can't be null!",
+	//	})
+	//	return
+	//}
+	//
+	//idInt, err := strconv.ParseInt(id, 10, 64)
+	//if err != nil {
+	//	ctx.JSON(http.StatusBadRequest, gin.H{
+	//		"message": "Please input number!",
+	//	})
+	//	return
+	//}
 
-	idInt, err := strconv.ParseInt(id, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Please input number!",
-		})
-		return
-	}
-
-	resp, err := c.userService.GetUserInfo(idInt)
+	resp, err := c.userService.GetUserInfo(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

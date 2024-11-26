@@ -17,7 +17,7 @@ func Init(router *gin.Engine) {
 
 	auth := router.Group("/auth")
 	auth.Use(middleware.Auth(newUserService))
-	auth.GET("/info/:id", api.GetUserInfo) // 獲取個人資料
+	auth.GET("/info", api.GetUserInfo) // 獲取個人資料
 	//auth.GET("/info", func(ctx *gin.Context) {
 	//	claim, err := jwt.GetUserInfo(ctx)
 	//	if err != nil {
