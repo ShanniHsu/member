@@ -102,11 +102,6 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 	if exist {
 		user = ctxUser.(*models.User)
 	}
-	//user, err = s.repo.UserRepository.GetUserByID(id)
-	//if err != nil {
-	//	err = errors.New("Get user failed!")
-	//	return
-	//}
 
 	resp = &get_user.Response{
 		Account:  user.Account,

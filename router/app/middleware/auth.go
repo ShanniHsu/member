@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"member/models"
 	"member/pkg/jwt"
@@ -17,7 +16,6 @@ func Auth(userService service.User) gin.HandlerFunc {
 
 		// 獲取authorization header: 獲取前端傳過來的訊息
 		tokenString := ctx.GetHeader("Authorization")
-		fmt.Println("前端傳的請求token: ", tokenString)
 
 		// 驗證前端傳過來的token格式，須不為空，且開頭為Bearer
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {

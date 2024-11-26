@@ -5,8 +5,6 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"errors"
-	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"time"
 )
@@ -22,22 +20,6 @@ func InitJwt() {
 type AuthClaims struct {
 	jwt.RegisteredClaims
 	Token string
-}
-
-// 獲取使用者資訊
-func GetUserInfo(ctx *gin.Context) (claim interface{}, err error) {
-	// 通過http header中的token解析來認證
-	token := ctx.Request.Header.Get("Authorization")
-	if token == "" {
-		return nil, fmt.Errorf("no jwt token")
-	}
-
-	claim, err = ParseToken(token[7:])
-	if err != nil {
-		return nil, fmt.Errorf("bad jwt: %s", err)
-	}
-
-	return claim, nil
 }
 
 // 解析jwt token
