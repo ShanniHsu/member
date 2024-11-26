@@ -15,6 +15,7 @@ import (
 type User interface {
 	Register(req *register.Request) (err error)
 	Login(req *login.Request) (jwtToken string, err error)
+	AuthBearerToken(token string) (user *models.User, err error)
 	GetUserInfo(id int64) (resp *get_user.Response, err error)
 }
 
@@ -80,6 +81,15 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 
 	jwtToken, err = jwt.GenerateJWT(token)
 	if err != nil {
+		return
+	}
+	return
+}
+
+func (s userService) AuthBearerToken(token string) (user *models.User, err error) {
+	user, err = s.repo.UserRepository.GetUserByToken(token)
+	if err != nil {
+		err = errors.New("Token isn't found!")
 		return
 	}
 	return
