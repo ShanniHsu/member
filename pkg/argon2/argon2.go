@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/argon2"
-	"log"
 	"strings"
 )
 
@@ -22,23 +21,6 @@ type params struct {
 	parallelism uint8
 	saltLength  uint32
 	keyLength   uint32
-}
-
-func TestPrint() {
-
-	// Pass the plaintext password and parameters to our generateFromPassword
-	// helper function.
-	hash, err := GenerateFromPassword("password123")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("hash: ", hash)
-	match, err := ComparePasswordAndHash("password123", hash)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("match: ", match)
 }
 
 func GenerateFromPassword(password string) (encodedHash string, err error) {
