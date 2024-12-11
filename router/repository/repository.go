@@ -8,7 +8,8 @@ type Repo struct {
 
 func NewRepository() Repo {
 	db := storage.InitStorage.GetDBConnect()
+	redis := storage.InitStorage.GetRDBConnect()
 	return Repo{
-		UserRepository: NewUserRepository(db),
+		UserRepository: NewUserRepository(db, redis),
 	}
 }
