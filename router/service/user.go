@@ -31,16 +31,17 @@ func (s userService) Register(req register.Request) (err error) {
 		return
 	}
 
-	password, err := argon2.GenerateFromPassword(req.Password)
-	if err != nil {
-		err = errors.New("The password generate failed!")
-		return
-	}
-
 	//if the account is not existed
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			var user = new(models.User)
+			var password string
+			password, err = argon2.GenerateFromPassword(req.Password)
+			if err != nil {
+				err = errors.New("The password generate failed!")
+				return
+			}
+
 			user = &models.User{
 				Account:  req.Account,
 				Password: password,
