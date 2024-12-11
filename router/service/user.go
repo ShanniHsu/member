@@ -2,9 +2,13 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/argon2"
+	"member/pkg/jwt"
+	"member/pkg/uuid"
+	"member/router/app/content/get_user"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
@@ -12,7 +16,9 @@ import (
 
 type User interface {
 	Register(req *register.Request) (err error)
-	Login(req *login.Request) (err error)
+	Login(req *login.Request) (jwtToken string, err error)
+	AuthBearerToken(token string) (user *models.User, err error)
+	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
 }
 
 type userService struct {
@@ -58,7 +64,7 @@ func (s userService) Register(req *register.Request) (err error) {
 	return
 }
 
-func (s userService) Login(req *login.Request) (err error) {
+func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Authentication failed!")
@@ -72,5 +78,49 @@ func (s userService) Login(req *login.Request) (err error) {
 		err = errors.New("Authentication failed!")
 		return
 	}
+
+	// 給登入者身份識別
+	token := uuid.GenerateUuid()
+
+	newData := map[string]interface{}{
+		"token": token,
+	}
+
+	err = s.repo.UserRepository.Update(resp, newData)
+	if err != nil {
+		err = errors.New("Update user failed!")
+		return
+	}
+
+	jwtToken, err = jwt.GenerateJWT(token)
+	if err != nil {
+		return
+	}
+	return
+}
+
+func (s userService) AuthBearerToken(token string) (user *models.User, err error) {
+	user, err = s.repo.UserRepository.GetUserByToken(token)
+	if err != nil {
+		err = errors.New("Token isn't found!")
+		return
+	}
+	return
+}
+
+func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error) {
+	var user = new(models.User)
+	ctxUser, exist := ctx.Get("user")
+	if exist {
+		user = ctxUser.(*models.User)
+	}
+
+	resp = &get_user.Response{
+		Account:  user.Account,
+		Password: user.Password,
+		Nickname: user.Nickname,
+		Status:   user.Status,
+	}
+
 	return
 }

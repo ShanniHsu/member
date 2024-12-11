@@ -10,8 +10,11 @@ import (
 
 // method
 type UserRepository interface {
-	GetUserByAccount(account string) (resp *models.User, err error)
+	GetUserByAccount(account string) (user *models.User, err error)
+	GetUserByID(id int64) (user *models.User, err error)
+	GetUserByToken(token string) (user *models.User, err error)
 	Create(user *models.User) (err error)
+	Update(user *models.User, newData map[string]interface{}) (err error)
 	SetRedis(key string, value string, expiration time.Duration) (err error)
 	GetRedis(key string) (value string, err error)
 	DeleteRedis(key string) (err error)
@@ -32,13 +35,28 @@ func NewUserRepository(db *gorm.DB, redis *redis.Client) UserRepository {
 }
 
 // Mothod of UserRepository(interface)
-func (r userRepository) GetUserByAccount(account string) (resp *models.User, err error) {
-	err = r.DB.Where("account = ?", account).First(&resp).Error
-	return resp, err
+func (r userRepository) GetUserByAccount(account string) (user *models.User, err error) {
+	err = r.DB.Where("account = ?", account).First(&user).Error
+	return
+}
+
+func (r userRepository) GetUserByID(id int64) (user *models.User, err error) {
+	user = new(models.User)
+	err = r.DB.Where("id = ?", id).First(&user).Error
+	return
+}
+func (r userRepository) GetUserByToken(token string) (user *models.User, err error) {
+	user = new(models.User)
+	err = r.DB.Where("token = ?", token).First(&user).Error
+	return
 }
 
 func (r userRepository) Create(user *models.User) (err error) {
 	return r.DB.Create(&user).Error
+}
+
+func (r userRepository) Update(user *models.User, newData map[string]interface{}) (err error) {
+	return r.DB.Model(&user).Updates(newData).Error
 }
 
 func (r userRepository) SetRedis(key string, value string, expiration time.Duration) (err error) {
