@@ -117,7 +117,6 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 
 	resp = &get_user.Response{
 		Account:  user.Account,
-		Password: user.Password,
 		Nickname: user.Nickname,
 		Status:   user.Status,
 	}
