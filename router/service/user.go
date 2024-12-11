@@ -4,6 +4,7 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"member/models"
+	"member/pkg/argon2"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
@@ -36,9 +37,16 @@ func (s userService) Register(req *register.Request) (err error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			var user = new(models.User)
+			var password string
+			password, err = argon2.GenerateFromPassword(req.Password)
+			if err != nil {
+				err = errors.New("The password generate failed!")
+				return
+			}
+
 			user = &models.User{
 				Account:  req.Account,
-				Password: req.Password,
+				Password: password,
 				Nickname: req.Account,
 			}
 			err = s.repo.UserRepository.Create(user)
