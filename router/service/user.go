@@ -64,7 +64,11 @@ func (s userService) Login(req *login.Request) (err error) {
 		err = errors.New("Authentication failed!")
 		return
 	}
-	if resp.Password != req.Password {
+	match, err := argon2.ComparePasswordAndHash(req.Password, resp.Password)
+	if err != nil {
+		return
+	}
+	if !match {
 		err = errors.New("Authentication failed!")
 		return
 	}
