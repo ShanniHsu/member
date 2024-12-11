@@ -25,6 +25,24 @@ type params struct {
 }
 
 func TestPrint() {
+
+	// Pass the plaintext password and parameters to our generateFromPassword
+	// helper function.
+	hash, err := GenerateFromPassword("password123")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("hash: ", hash)
+	match, err := ComparePasswordAndHash("password123", hash)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("match: ", match)
+}
+
+func GenerateFromPassword(password string) (encodedHash string, err error) {
+
 	// Establish the parameters to use for Argon2.
 	p := &params{
 		memory:      64 * 1024,
@@ -34,41 +52,19 @@ func TestPrint() {
 		keyLength:   32,
 	}
 
-	// Pass the plaintext password and parameters to our generateFromPassword
-	// helper function.
-	hash, err := generateFromPassword("password123", p)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("p: ", p)
-	fmt.Println("hash: ", hash)
-
-	match, err := comparePasswordAndHash("password123", hash)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("match: ", match)
-}
-
-func generateFromPassword(password string, p *params) (encodedHash string, err error) {
 	salt, err := generateRandomBytes(p.saltLength)
 	if err != nil {
-		return "", err
+		return
 	}
-	fmt.Println("salt: ", salt)
 	hash := argon2.IDKey([]byte(password), salt, p.iterations, p.memory, p.parallelism, p.keyLength)
-	fmt.Println("hash: ", hash)
 	// Base64 encode the salt and hashed password.
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
-	fmt.Println("b64Salt: ", b64Salt)
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
-	fmt.Println("b64Hash: ", b64Hash)
 
 	// Return a string using the standard encoded hash representation.
 	encodedHash = fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, p.memory, p.iterations, p.parallelism, b64Salt, b64Hash)
 
-	return encodedHash, nil
+	return
 }
 
 func generateRandomBytes(n uint32) ([]byte, error) {
@@ -81,7 +77,7 @@ func generateRandomBytes(n uint32) ([]byte, error) {
 	return b, nil
 }
 
-func comparePasswordAndHash(password, encodedHash string) (match bool, err error) {
+func ComparePasswordAndHash(password, encodedHash string) (match bool, err error) {
 	// Extract the parameters, salt and derived key from the encoded password
 	// hash.
 	p, salt, hash, err := decodeHash(encodedHash)
