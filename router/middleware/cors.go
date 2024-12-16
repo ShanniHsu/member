@@ -3,6 +3,7 @@ package middleware
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"time"
 )
 
@@ -19,6 +20,17 @@ func Cors() gin.HandlerFunc {
 			},
 			MaxAge: 12 * time.Hour,
 		})
+
+		method := ctx.Request.Method
+
+		//放行所有OPTIONS方法
+		if method == "OPTIONS" {
+			ctx.AbortWithStatus(http.StatusNoContent)
+		}
+		// 這邊要解決跨域問題是先發一次options請求，獲取allowheader，允許跨域之後才會再發真正的Post請求
+
+		//處理請求
+		ctx.Next()
 		// AllowOrigins: 允許https://foo.com的跨域請求
 		// AllowMethods: 僅允許使用PUT&PATCH方法的跨域請求
 		// AllowHeaders: 跨域請求可以帶有Origin請求頭
