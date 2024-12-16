@@ -24,7 +24,6 @@ func newRouter() *gin.Engine {
 	})
 
 	router.GET("/ping", func(c *gin.Context) {
-		panic("errrrrrr")
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
