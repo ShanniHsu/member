@@ -9,6 +9,15 @@ import (
 
 func Cors() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// https://cloud.tencent.com/developer/article/2378435
+		// 允許所有來源
+		// cors.Default()
+
+		// 但這個沒有允許所有來源，還是必須使用AllowOrigins
+		//config := cors.DefaultConfig()
+		//config.AllowOrigins = []string{"https://foo.com"}
+
+		// 這邊是比較嚴謹的用法
 		cors.New(cors.Config{
 			AllowOrigins:     []string{"https://foo.com"},
 			AllowMethods:     []string{"PUT", "PATCH"},
@@ -18,7 +27,7 @@ func Cors() gin.HandlerFunc {
 			AllowOriginFunc: func(origin string) bool {
 				return origin == "https://github.com"
 			},
-			MaxAge: 12 * time.Hour,
+			MaxAge: 1 * time.Hour,
 		})
 
 		method := ctx.Request.Method
