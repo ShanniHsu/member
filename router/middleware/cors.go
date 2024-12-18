@@ -17,11 +17,18 @@ func Cors() gin.HandlerFunc {
 		//config := cors.DefaultConfig()
 		//config.AllowOrigins = []string{"https://foo.com"}
 
+		/*
+			curl -X OPTIONS http://localhost:8888/ping \
+			     -H "Origin: https://foo.com" \
+			     -H "Access-Control-Request-Method: PUT" \
+			     -H "Access-Control-Request-Headers: Origin,Content-Type" \
+			     -v
+		*/
 		// 這邊是比較嚴謹的用法
 		cors.New(cors.Config{
 			AllowOrigins:     []string{"https://foo.com"},
 			AllowMethods:     []string{"PUT", "PATCH"},
-			AllowHeaders:     []string{"Origin"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
 			ExposeHeaders:    []string{"Content-Length"},
 			AllowCredentials: true,
 			AllowOriginFunc: func(origin string) bool {
