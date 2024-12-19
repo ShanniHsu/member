@@ -5,12 +5,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestSQL() (migrate *gormigrate.Migration) {
+func CreateUser() (migrate *gormigrate.Migration) {
 	return &gormigrate.Migration{
-		ID: "09876",
+		ID: "202412191705",
 		Migrate: func(tx *gorm.DB) (err error) {
-			if err = tx.Exec("CREATE TABLE `tests` (`id` int(11) unsigned NOT NULL AUTO_INCREMENT, \n" +
+			if err = tx.Exec("CREATE TABLE `users` (`id` int(11) unsigned NOT NULL AUTO_INCREMENT, \n" +
 				"`account` varchar(200) NOT NULL COMMENT '帳號', \n" +
+				"`password` varchar(200) NOT NULL COMMENT '密碼', \n" +
+				"`nickname` varchar(200) NOT NULL COMMENT '綽號', \n" +
+				"`status` int(11) NOT NULL COMMENT '狀態', \n" +
+				"`token` varchar(500) NOT NULL COMMENT 'Token', \n" +
 				"`created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \n" +
 				"`updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP, \n" +
 				"PRIMARY KEY (`id`) \n" +
@@ -20,7 +24,7 @@ func TestSQL() (migrate *gormigrate.Migration) {
 			return nil
 		},
 		Rollback: func(tx *gorm.DB) (err error) {
-			tx.Migrator().DropTable("tests") //再確認
+			tx.Migrator().DropTable("users")
 			return nil
 		},
 	}

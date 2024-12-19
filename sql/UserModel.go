@@ -6,7 +6,7 @@ import (
 	"member/models"
 )
 
-func CreateUserTable() (migrate *gormigrate.Migration) {
+func UserModel() (migrate *gormigrate.Migration) {
 
 	return &gormigrate.Migration{
 		ID: "1234",
