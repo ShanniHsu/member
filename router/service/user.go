@@ -6,8 +6,10 @@ import (
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/argon2"
+	"member/pkg/ecPay/proxy"
 	"member/pkg/jwt"
 	"member/pkg/uuid"
+	"member/router/app/content/create-order"
 	"member/router/app/content/get_user"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
@@ -19,6 +21,7 @@ type User interface {
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
 	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
+	CreateOrder(req *create_order.Request) (err error)
 }
 
 type userService struct {
@@ -121,5 +124,14 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 		Status:   user.Status,
 	}
 
+	return
+}
+
+func (s userService) CreateOrder(req *create_order.Request) (err error) {
+	err = proxy.CreateOrder(req)
+	if err != nil {
+		err = errors.New("Create order failed")
+		return
+	}
 	return
 }

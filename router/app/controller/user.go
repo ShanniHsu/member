@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"member/pkg/ecPay/proxy"
+	"member/router/app/content/create-order"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"net/http"
@@ -82,7 +82,16 @@ func (c appController) GetUserInfo(ctx *gin.Context) {
 }
 
 func (c appController) CreateOrder(ctx *gin.Context) {
-	err := proxy.CreateOrder()
+	req := new(create_order.Request)
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	err = c.userService.CreateOrder(req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
