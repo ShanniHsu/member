@@ -8,7 +8,7 @@ import (
 	"member/pkg/argon2"
 	"member/pkg/jwt"
 	"member/pkg/uuid"
-	"member/router/app/content/get_user"
+	"member/router/app/content/get-user"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
