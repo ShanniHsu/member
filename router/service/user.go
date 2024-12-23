@@ -21,7 +21,7 @@ type User interface {
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
 	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
-	CreateOrder(req *create_order.Request) (err error)
+	CreateOrder(req *create_order.Request) (body []byte, err error)
 }
 
 type userService struct {
@@ -127,8 +127,8 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 	return
 }
 
-func (s userService) CreateOrder(req *create_order.Request) (err error) {
-	err = proxy.CreateOrder(req)
+func (s userService) CreateOrder(req *create_order.Request) (body []byte, err error) {
+	body, err = proxy.CreateOrder(req)
 	if err != nil {
 		err = errors.New("Create order failed")
 		return

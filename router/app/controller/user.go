@@ -91,7 +91,7 @@ func (c appController) CreateOrder(ctx *gin.Context) {
 		return
 	}
 
-	err = c.userService.CreateOrder(req)
+	body, err := c.userService.CreateOrder(req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -99,8 +99,7 @@ func (c appController) CreateOrder(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully",
-	})
+	ctx.Data(http.StatusOK, "text/html; charset=utf-8", body)
+
 	return
 }

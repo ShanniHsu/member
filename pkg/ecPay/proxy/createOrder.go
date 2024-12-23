@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	create_order "member/router/app/content/create-order"
 	"net/http"
 	"net/url"
 	"reflect"
 )
 
-func CreateOrder(req *create_order.Request) (err error) {
+func CreateOrder(req *create_order.Request) (body []byte, err error) {
 
 	apiURL := "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"
 	formData := url.Values{}
@@ -64,5 +65,12 @@ func CreateOrder(req *create_order.Request) (err error) {
 	} else {
 		fmt.Printf("Request failed with status: %d\n", resp.StatusCode)
 	}
+
+	body, err = io.ReadAll(resp.Body)
+	if err != nil {
+		err = errors.New("Failed to read the body!")
+		return
+	}
+
 	return
 }
