@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/argon2"
+	"member/pkg/ecPay/checkValue"
 	"member/pkg/ecPay/proxy"
 	"member/pkg/jwt"
 	"member/pkg/uuid"
@@ -128,6 +129,8 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 }
 
 func (s userService) CreateOrder(req *create_order.Request) (body []byte, err error) {
+	checkValue := checkValue.GetCheckValue(req)
+	req.CheckMacValue = checkValue
 	body, err = proxy.CreateOrder(req)
 	if err != nil {
 		err = errors.New("Create order failed")
