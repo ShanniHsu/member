@@ -12,7 +12,6 @@ import (
 )
 
 func CreateOrder(req *create_order.Request) (body []byte, err error) {
-
 	apiURL := "https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5"
 	formData := url.Values{}
 
@@ -30,7 +29,9 @@ func CreateOrder(req *create_order.Request) (body []byte, err error) {
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i).Name
 			value := v.Field(i).String()
-			formData.Set(field, value)
+			if value != "" {
+				formData.Set(field, value)
+			}
 		}
 	} else {
 		err = errors.New("Because it not type of struct, it can't iterate over fields ")
