@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>支付提交</title>
+</head>
+<body>
+<form method="post" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5">
+    <input type="hidden" name="MerchantID" value="3002607">
+    <input type="hidden" name="MerchantTradeNo" value="s241230005">
+    <input type="hidden" name="MerchantTradeDate" value="2024/12/30 17:39:00">
+    <input type="hidden" name="PaymentType" value="aio">
+    <input type="hidden" name="TotalAmount" value="30000">
+    <input type="hidden" name="TradeDesc" value="促銷方案">
+    <input type="hidden" name="ItemName" value="Apple iphone 15">
+    <input type="hidden" name="ReturnURL" value="https://8697-61-220-251-229.ngrok-free.app/receive">
+    <input type="hidden" name="ChoosePayment" value="Credit">
+    <input type="hidden" name="CheckMacValue" value="3FA5DBF68483561F41EDC813826B49123AF1DE586EEE97F1D0C6CC040E2EAEDC">
+    <input type="hidden" name="EncryptType" value="1">
+    <button type="submit">Pay</button>
+</form>
+</body>
+</html>
