@@ -1,14 +1,27 @@
 package middleware
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"time"
 )
 
 func Cors() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		// 設置 CORS 標頭
+		ctx.Header("Access-Control-Allow-Origin", "http://localhost:8080")            // 允許的前端地址
+		ctx.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS") // 允許的 HTTP 方法
+		ctx.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")     // 允許的請求頭
+		ctx.Header("Access-Control-Allow-Credentials", "true")                        // 是否允許攜帶憑據（如 Cookie）
+
+		// 如果是 OPTIONS 預檢請求，直接返回狀態 204
+		if ctx.Request.Method == "OPTIONS" {
+			ctx.AbortWithStatus(http.StatusNoContent)
+			return
+		}
+
+		// 繼續處理其他請求
+		ctx.Next()
+
 		// https://cloud.tencent.com/developer/article/2378435
 		// 允許所有來源
 		// cors.Default()
@@ -25,28 +38,28 @@ func Cors() gin.HandlerFunc {
 			     -v
 		*/
 		// 這邊是比較嚴謹的用法
-		cors.New(cors.Config{
-			AllowOrigins:     []string{"https://foo.com"},
-			AllowMethods:     []string{"PUT", "PATCH"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
-			ExposeHeaders:    []string{"Content-Length"},
-			AllowCredentials: true,
-			AllowOriginFunc: func(origin string) bool {
-				return origin == "https://github.com"
-			},
-			MaxAge: 1 * time.Hour,
-		})
+		//cors.New(cors.Config{
+		//	AllowOrigins: []string{"http://localhost:8080"},
+		//	AllowMethods: []string{"GET, POST, PUT, DELETE, OPTIONS"},
+		//	AllowHeaders: []string{"Content-Type, Authorization"},
+		//ExposeHeaders:    []string{"Content-Length"},
+		//AllowCredentials: true,
+		//AllowOriginFunc: func(origin string) bool {
+		//	return origin == "https://github.com"
+		//},
+		//MaxAge: 1 * time.Hour,
+		//})
 
-		method := ctx.Request.Method
+		//method := ctx.Request.Method
 
 		//放行所有OPTIONS方法
-		if method == "OPTIONS" {
-			ctx.AbortWithStatus(http.StatusNoContent)
-		}
+		//if method == "OPTIONS" {
+		//	ctx.AbortWithStatus(http.StatusNoContent)
+		//}
 		// 這邊要解決跨域問題是先發一次options請求，獲取allowheader，允許跨域之後才會再發真正的Post請求
 
 		//處理請求
-		ctx.Next()
+		//ctx.Next()
 		// AllowOrigins: 允許https://foo.com的跨域請求
 		// AllowMethods: 僅允許使用PUT&PATCH方法的跨域請求
 		// AllowHeaders: 跨域請求可以帶有Origin請求頭
