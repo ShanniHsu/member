@@ -1,4 +1,4 @@
-package sql
+package v2412
 
 import (
 	"github.com/go-gormigrate/gormigrate/v2"
