@@ -12,6 +12,7 @@ import (
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
+	"net/http"
 )
 
 type User interface {
@@ -19,6 +20,7 @@ type User interface {
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
 	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
+	Logout(ctx *gin.Context) (err error)
 }
 
 type userService struct {
@@ -122,5 +124,24 @@ func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err
 		Status:   user.Status,
 	}
 
+	return
+}
+
+func (s userService) Logout(ctx *gin.Context) (err error) {
+	var user = new(models.User)
+	ctxUser, exist := ctx.Get("user")
+	if exist {
+		user = ctxUser.(*models.User)
+	}
+	newData := map[string]interface{}{
+		"token": "",
+	}
+	err = s.repo.UserRepository.Update(user, newData)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
 	return
 }

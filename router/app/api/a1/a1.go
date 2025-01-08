@@ -18,4 +18,5 @@ func Init(router *gin.Engine) {
 	auth := router.Group("/auth")
 	auth.Use(middleware.Auth(newUserService))
 	auth.GET("/info", api.GetUserInfo) // 獲取個人資料
+	auth.POST("/logout", api.Logout)   // 登出
 }

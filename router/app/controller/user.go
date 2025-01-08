@@ -79,3 +79,17 @@ func (c appController) GetUserInfo(ctx *gin.Context) {
 	})
 	return
 }
+
+func (c appController) Logout(ctx *gin.Context) {
+	err := c.userService.Logout(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Logout Successfully",
+	})
+	return
+}
