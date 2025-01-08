@@ -53,7 +53,8 @@ func (s userService) Register(req *register.Request) (err error) {
 			user = &models.User{
 				Account:  req.Account,
 				Password: password,
-				Nickname: req.Account,
+				Nickname: req.Nickname,
+				Email:    req.Email,
 			}
 			err = s.repo.UserRepository.Create(user)
 			if err != nil {
