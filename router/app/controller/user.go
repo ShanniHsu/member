@@ -4,16 +4,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
+	"member/router/app/content/response"
+	"member/router/app/errors"
 	"net/http"
 )
 
 func (c appController) Register(ctx *gin.Context) {
 	req := new(register.Request)
 	err := ctx.ShouldBindJSON(&req)
+	resp := response.NewResponse(ctx)
+
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		var errString []string
+		errString = append(errString, err.Error())
+		errorResponse := errors.StatusBadRequest.WithDetails(errString...)
+		resp.MakeErrorResponse(errorResponse)
+		//ctx.JSON(http.StatusBadRequest, gin.H{
+		//	"message": err.Error(),
+		//})
 		return
 	}
 	err = c.userService.Register(req)
