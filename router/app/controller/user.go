@@ -31,9 +31,10 @@ func (c appController) Register(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Register successfully!",
-	})
+	resp.MakeResponse(nil)
+	//ctx.JSON(http.StatusOK, gin.H{
+	//	"message": "Register successfully!",
+	//})
 	return
 }
 
