@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
+	"member/router/app/content/response"
 	"net/http"
 )
 
@@ -32,36 +33,33 @@ func (c appController) Register(ctx *gin.Context) {
 func (c appController) Login(ctx *gin.Context) {
 	req := new(login.Request)
 	err := ctx.ShouldBindJSON(&req)
+	res := response.Response{Message: "Server error"}
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		res.Message = err.Error()
+		res.ResponseBadRequest(ctx)
 		return
 	}
 	if req.Account == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "The account must input.",
-		})
+		res.Message = "The account must input."
+		res.ResponseBadRequest(ctx)
 		return
 	}
 
 	if req.Password == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "The password must input.",
-		})
+		res.Message = "The password must input."
+		res.ResponseBadRequest(ctx)
 		return
 	}
 	jwtToken, err := c.userService.Login(req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		res.Message = err.Error()
+		res.ResponseBadRequest(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":  "Login successfully!",
-		"jwtToken": jwtToken,
-	})
+	res.Message = "Login successfully"
+	res.Result = true
+	res.Data = jwtToken
+	res.ResponseSuccess(ctx)
 	return
 }
 
