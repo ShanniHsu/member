@@ -1,7 +1,6 @@
 package router
 
 import (
-	"github.com/gin-contrib/requestid"
 	"github.com/gin-gonic/gin"
 	"log"
 	"member/router/app/api/a1"
@@ -17,7 +16,7 @@ func Init() {
 func newRouter() *gin.Engine {
 	router := gin.New()
 	// 註冊上面自定義的日誌中間件
-	router.Use(middleware.Logger(), middleware.Cors(), requestid.New())
+	middleware.AddGinMiddleware(router, "requestId", "cors", "logger")
 	router.GET("/test", func(c *gin.Context) {
 		// 查詢我們之前在日誌中間件，注入的鍵值數
 		example := c.MustGet("example").(string)
