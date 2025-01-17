@@ -15,6 +15,4 @@ func Timing(ctx *gin.Context) {
 	duration := time.Since(start)
 	// 記錄日誌
 	log.Printf("Request %s %s took %v", ctx.Request.Method, ctx.Request.URL.Path, duration)
-	// 添加至Response Header
-	ctx.Writer.Header().Set("X-Response-Time", duration.String())
 }
