@@ -15,6 +15,8 @@ func AddGinMiddleware(router gin.IRouter, args ...string) gin.IRoutes {
 				router.Use(Cors())
 			case "logger":
 				router.Use(Logger())
+			case "timing":
+				router.Use(Timing)
 			}
 		}
 	}
