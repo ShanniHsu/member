@@ -13,12 +13,15 @@ type AppController interface {
 }
 
 type appController struct {
-	userService service.User
+	userService       service.User
+	restaurantService service.Restaurant
 }
 
 func NewAppController(
-	userService service.User) AppController {
+	userService service.User,
+	restaurantService service.Restaurant) AppController {
 	return appController{
-		userService: userService,
+		userService:       userService,
+		restaurantService: restaurantService,
 	}
 }

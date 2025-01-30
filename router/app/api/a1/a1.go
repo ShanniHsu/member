@@ -11,7 +11,11 @@ import (
 func Init(router *gin.Engine) {
 	newRepo := repository.NewRepository()
 	newUserService := service.NewUserService(newRepo)
-	api := controller.NewAppController(newUserService)
+	newRestaurantService := service.NewRestaurantService(newRepo)
+	api := controller.NewAppController(
+		newUserService,
+		newRestaurantService,
+	)
 	router.POST("/register", api.Register) // 註冊
 	router.POST("/login", api.Login)       // 登入
 

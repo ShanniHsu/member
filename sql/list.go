@@ -9,4 +9,5 @@ import (
 var List = []*gormigrate.Migration{
 	v2412.CreateUser(),
 	v2501.AddUserEmail(),
+	v2501.CreateRestaurant(),
 }
