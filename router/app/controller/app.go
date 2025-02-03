@@ -10,6 +10,7 @@ type AppController interface {
 	Login(c *gin.Context)
 	GetUserInfo(c *gin.Context)
 	GetRestaurants(c *gin.Context)
+	GetRestaurantList(c *gin.Context)
 	Logout(c *gin.Context)
 }
 

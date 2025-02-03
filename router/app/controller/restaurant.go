@@ -2,7 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	get_restaurants "member/router/app/content/get-restaurants"
 	"net/http"
+	"strconv"
 )
 
 func (c appController) GetRestaurants(ctx *gin.Context) {
@@ -15,6 +17,43 @@ func (c appController) GetRestaurants(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get restaurants successfully!",
+		"data":    resp,
+	})
+}
+
+func (c appController) GetRestaurantList(ctx *gin.Context) {
+	req := new(get_restaurants.Request)
+	idString := ctx.Param("id")
+	typeString := ctx.Param("type")
+
+	idInt, err := strconv.ParseInt(idString, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	typeInt, err := strconv.ParseInt(typeString, 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	req.Type = typeInt
+	req.ID = idInt
+
+	resp, err := c.restaurantService.GetRestaurantList(req)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Get restaurant list successfully!",
 		"data":    resp,
 	})
 }
