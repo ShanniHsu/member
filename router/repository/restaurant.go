@@ -8,7 +8,7 @@ import (
 
 type RestaurantRepository interface {
 	GetRestaurants() (restaurants *[]models.Restaurant, err error)
-	GetRestaurantList(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error)
+	GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error)
 }
 
 type restaurantRepository struct {
@@ -26,7 +26,7 @@ func (s restaurantRepository) GetRestaurants() (restaurants *[]models.Restaurant
 	return
 }
 
-func (s restaurantRepository) GetRestaurantList(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error) {
+func (s restaurantRepository) GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error) {
 	query := s.DB.Model(&models.Restaurant{})
 	if parameter.ID != 0 {
 		query = query.Where("id = ?", parameter.ID)

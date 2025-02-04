@@ -23,23 +23,30 @@ func (c appController) GetRestaurants(ctx *gin.Context) {
 
 func (c appController) GetRestaurantList(ctx *gin.Context) {
 	req := new(get_restaurants.Request)
-	idString := ctx.Param("id")
-	typeString := ctx.Param("type")
+	var idInt, typeInt int64
+	var err error
 
-	idInt, err := strconv.ParseInt(idString, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
+	idString := ctx.Query("id")
+	if idString != "" {
+		idInt, err = strconv.ParseInt(idString, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
 	}
 
-	typeInt, err := strconv.ParseInt(typeString, 10, 64)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
+	typeString := ctx.Query("type")
+
+	if typeString != "" {
+		typeInt, err = strconv.ParseInt(typeString, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
 	}
 
 	req.Type = typeInt

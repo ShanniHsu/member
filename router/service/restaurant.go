@@ -33,7 +33,7 @@ func (s restaurantService) GetRestaurants() (restaurants *[]models.Restaurant, e
 }
 
 func (s restaurantService) GetRestaurantList(req *get_restaurants.Request) (restaurants *[]models.Restaurant, err error) {
-	restaurants, err = s.repo.RestaurantRepository.GetRestaurantList(req)
+	restaurants, err = s.repo.RestaurantRepository.GetRestaurantFilter(req)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Restaurants isn't found!")
 		return
