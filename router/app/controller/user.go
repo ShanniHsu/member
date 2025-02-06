@@ -11,7 +11,7 @@ import (
 
 func (c appController) Register(ctx *gin.Context) {
 	req := new(register.Request)
-	err := ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindJSON(req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -33,7 +33,7 @@ func (c appController) Register(ctx *gin.Context) {
 
 func (c appController) Login(ctx *gin.Context) {
 	req := new(login.Request)
-	err := ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindJSON(req)
 	requestID := requestid.Get(ctx)
 	if err != nil {
 		log.Printf("RequestID: %s", requestID)
