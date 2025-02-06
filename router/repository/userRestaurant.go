@@ -1,8 +1,12 @@
 package repository
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+	"member/models"
+)
 
 type UserRestaurantRepository interface {
+	Create(userRestaurant *models.UserRestaurant) (err error)
 }
 
 type userRestaurantRepository struct {
@@ -10,7 +14,11 @@ type userRestaurantRepository struct {
 }
 
 func NewUserRestaurantRepository(db *gorm.DB) UserRestaurantRepository {
-	return restaurantRepository{
+	return userRestaurantRepository{
 		DB: db,
 	}
+}
+
+func (r userRestaurantRepository) Create(userRestaurant *models.UserRestaurant) (err error) {
+	return r.DB.Create(userRestaurant).Error
 }
