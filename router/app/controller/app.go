@@ -11,19 +11,23 @@ type AppController interface {
 	GetUserInfo(c *gin.Context)
 	GetRestaurants(c *gin.Context)
 	GetRestaurantList(c *gin.Context)
+	AddPocketRestaurant(c *gin.Context)
 	Logout(c *gin.Context)
 }
 
 type appController struct {
 	userService       service.User
 	restaurantService service.Restaurant
+	userRestaurant    service.UserRestaurant
 }
 
 func NewAppController(
 	userService service.User,
-	restaurantService service.Restaurant) AppController {
+	restaurantService service.Restaurant,
+	userRestaurantService service.UserRestaurant) AppController {
 	return appController{
 		userService:       userService,
 		restaurantService: restaurantService,
+		userRestaurant:    userRestaurantService,
 	}
 }
