@@ -12,7 +12,6 @@ import (
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/repository"
-	"net/http"
 )
 
 type User interface {
@@ -138,9 +137,6 @@ func (s userService) Logout(ctx *gin.Context) (err error) {
 	}
 	err = s.repo.UserRepository.Update(user, newData)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
 		return
 	}
 	return
