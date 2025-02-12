@@ -11,6 +11,7 @@ type AppController interface {
 	GetUserInfo(c *gin.Context)
 	GetRestaurants(c *gin.Context)
 	GetRestaurantList(c *gin.Context)
+	GetPocketRestaurantList(c *gin.Context)
 	AddPocketRestaurant(c *gin.Context)
 	Logout(c *gin.Context)
 }

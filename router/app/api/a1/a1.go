@@ -23,9 +23,10 @@ func Init(router *gin.Engine) {
 
 	auth := router.Group("/auth")
 	auth.Use(middleware.Auth(newUserService))
-	auth.GET("/info", api.GetUserInfo)                       // 獲取個人資料
-	auth.GET("/restaurants", api.GetRestaurants)             // 獲取餐廳列表
-	auth.GET("/restaurant-list", api.GetRestaurantList)      // 獲取餐廳列表
-	auth.POST("/pocket-restaurant", api.AddPocketRestaurant) // 加入口袋餐廳
-	auth.POST("/logout", api.Logout)                         // 登出
+	auth.GET("/info", api.GetUserInfo)                               // 獲取個人資料
+	auth.GET("/restaurants", api.GetRestaurants)                     // 獲取餐廳列表
+	auth.GET("/restaurant-list", api.GetRestaurantList)              // 獲取餐廳列表
+	auth.GET("/pocket-restaurant-list", api.GetPocketRestaurantList) // 口袋餐廳列表
+	auth.POST("/pocket-restaurant", api.AddPocketRestaurant)         // 加入口袋餐廳
+	auth.POST("/logout", api.Logout)                                 // 登出
 }
