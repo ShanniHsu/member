@@ -20,7 +20,7 @@ func Auth(userService service.User) gin.HandlerFunc {
 		// 驗證前端傳過來的token格式，須不為空，且開頭為Bearer
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
 			ctx.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Request failed!",
+				"message": "Unauthorized!",
 			})
 			ctx.Abort()
 			return
