@@ -7,6 +7,7 @@ type Request struct {
 }
 
 type Response []struct {
+	ID      int64  `json:"id"`
 	Type    string `json:"type"`
 	Name    string `json:"name"`
 	Address string `json:"address"`
