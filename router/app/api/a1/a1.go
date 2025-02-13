@@ -28,5 +28,6 @@ func Init(router *gin.Engine) {
 	auth.GET("/restaurant-list", api.GetRestaurantList)              // 獲取餐廳列表
 	auth.GET("/pocket-restaurant-list", api.GetPocketRestaurantList) // 口袋餐廳列表
 	auth.POST("/pocket-restaurant", api.AddPocketRestaurant)         // 加入口袋餐廳
+	auth.DELETE("/pocket-restaurant", api.DeletePocketRestaurant)    // 移除口袋餐廳
 	auth.POST("/logout", api.Logout)                                 // 登出
 }
