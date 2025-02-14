@@ -26,14 +26,14 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 
 	typeString := ctx.Query("type")
 	if typeString != "" {
-		_, err := strconv.ParseInt(typeString, 10, 64)
+		typeInt, err := strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			return
 		}
-		req.Type = typeString
+		req.Type = typeInt
 	}
 
 	name := ctx.Query("name")

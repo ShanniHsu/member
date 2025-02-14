@@ -35,7 +35,7 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 		query = query.Where("user_restaurants.id = ?", parameter.ID)
 	}
 
-	if parameter.Type != "" {
+	if parameter.Type != 0 {
 		query = query.Where("restaurants.type = ?", parameter.Type)
 	}
 	if parameter.Name != "" {
