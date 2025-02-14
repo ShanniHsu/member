@@ -12,6 +12,18 @@ import (
 func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	req := new(get_user_restaurants.Request)
 
+	idString := ctx.Query("id")
+	if idString != "" {
+		idInt, err := strconv.ParseInt(idString, 10, 64)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"message": err.Error(),
+			})
+			return
+		}
+		req.ID = idInt
+	}
+
 	typeString := ctx.Query("type")
 	if typeString != "" {
 		_, err := strconv.ParseInt(typeString, 10, 64)
@@ -21,12 +33,18 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 			})
 			return
 		}
+		req.Type = typeString
 	}
+
 	name := ctx.Query("name")
+	if name != "" {
+		req.Name = name
+	}
+
 	address := ctx.Query("address")
-	req.Type = typeString
-	req.Name = name
-	req.Address = address
+	if address != "" {
+		req.Address = address
+	}
 
 	data, err := c.userRestaurant.GetPocketRestaurantList(ctx, req)
 	if err != nil {

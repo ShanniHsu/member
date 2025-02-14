@@ -1,6 +1,7 @@
 package get_user_restaurants
 
 type Request struct {
+	ID      int64  `query:"id"`
 	Type    string `query:"type"`
 	Name    string `query:"name"`
 	Address string `query:"address"`
