@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"member/models"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
@@ -53,6 +54,7 @@ func (s userRestaurantService) AddPocketRestaurant(ctx *gin.Context, req *create
 	}
 	err = s.repo.UserRestaurantRepository.Create(userRestaurant)
 	if err != nil {
+		err = errors.New("Create Failed!")
 		return
 	}
 	return
@@ -66,10 +68,17 @@ func (s userRestaurantService) DeletePocketRestaurant(ctx *gin.Context, req *del
 	}
 	req.UserID = user.ID
 
-	//這邊再增加對餐廳是否存在的邏輯
+	checkList := new(get_user_restaurants.Request)
+	checkList.ID = req.ID
+	list, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, req.UserID)
+	if len(*list) == 0 {
+		err = errors.New("ID isn't existed!")
+		return
+	}
 
 	err = s.repo.UserRestaurantRepository.Delete(req)
 	if err != nil {
+		err = errors.New("Delete Failed!")
 		return
 	}
 	return
