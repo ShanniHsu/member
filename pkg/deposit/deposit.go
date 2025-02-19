@@ -3,14 +3,14 @@ package deposit
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
 var mu = new(sync.Mutex)
 
 var balance int64 = 1000 // 原始存款餘額
 
-func deposit(amount int64) {
+func deposit(amount int64, wg *sync.WaitGroup) {
+	defer wg.Done()
 	mu.Lock() //獲取鎖，確保一個goroutine修改balance
 	defer mu.Unlock()
 	balance += amount
@@ -29,9 +29,14 @@ func UseDeposit() {
 	/* 3. 計算時間過長
 	   即使不發生OOM，因為單次mu.Lock()需要等待釋放後才能繼續，這會導致程式執行時間大幅拉長
 	*/
+	var wg sync.WaitGroup
 	for i := 0; i < 1000000000; i++ {
-		go deposit(10)
+		wg.Add(1)
+		go deposit(10, &wg) // 創造10億個goroutine
+		/* 1. 可能OOM(記憶體不足)
+		   2. 可能執行超過10分鐘甚至更久
+		   3. CPU100%，系統變慢 */
 	}
-	time.Sleep(1 * time.Second)
+	wg.Wait()
 	fmt.Println("balance: ", balance)
 }
