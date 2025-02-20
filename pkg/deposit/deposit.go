@@ -12,43 +12,69 @@ var balance int64 = 1000 // 原始存款餘額
 
 const workerCount = 100 // 限制最多100個goroutine
 
-func deposit(amount int64, jobs <-chan int, wg *sync.WaitGroup) {
+const (
+	numWorkers = 100        // worker數量
+	numJobs    = 1000000000 // 總共10億個任務
+	batchSize  = 1000       // 1個worker一次處理1000個jobs
+)
+
+/* 優化:
+   1. 使用go func()來生產任務，避免阻塞
+   2. 批量處理(batchSize = 1000)，減少Channel I/O開銷，提高效率
+   3. 減少worker間競爭，提升CPU/GPU使用率
+
+   結果:
+   1. 比原始方案快
+   2. 減少Channel傳輸開銷
+   3. 降低goroutine切換的成本
+   4. 更適合大規模數據處理 (如大數據計算、爬蟲、批量API請求等)
+*/
+
+// 負責批量處理數據
+func worker(id int, jobs <-chan []int, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for range jobs {
-		mu.Lock()
-		balance += amount
-		mu.Unlock()
+	for batch := range jobs {
+		sum := 0
+		for _, num := range batch {
+			sum += num
+		}
+		fmt.Printf("Worder %d 處理 %d 個任務，部分結果: %d\n", id, len(batch), sum)
+		time.Sleep(10 * time.Millisecond) // 模擬運算延遲
 	}
 }
 
-func UseDeposit() {
-	// 但這邊還是不夠有效率
-	/* 1. 太多任務同時塞入channel
-	   Go Channel雖然很強大，但jobs是個有界通道(這邊大小是1000)，當jobs被填滿時，主goroutine會阻塞，導致執行效率下降。
-	   Solution: 使用sync.WaitGroup & goroutine生產任務，讓生產與消費同時進行。
-	   2. 不需要10億個worker
-	   即使workerCount = 100，處理10億次依舊很慢，因為我們的worker仍然是一個一個處理。
-	   Solution: 增加批量處理 (Batch Processing)，一次處理多個數據，提高吞吐量。
-	*/
+func UseWorker() {
 	t := time.Now()
-	// 建立一個channel，作為工作佇列，存放要執行的工作
-	jobs := make(chan int, 1000) // 任務佇列
+	jobs := make(chan []int, numWorkers) // 使用Channel批量傳遞數據
 	var wg sync.WaitGroup
 
-	// 啟用固定數量的goroutine (100個deposit)
-	for i := 0; i < workerCount; i++ {
+	// 啟動Worker
+	for i := 1; i <= numWorkers; i++ {
 		wg.Add(1)
-		go deposit(10, jobs, &wg)
+		go worker(i, jobs, &wg)
 	}
 
-	// 送10億個存款任務
-	for i := 0; i < 1000000000; i++ {
-		jobs <- 0 //代表有接收
-	}
-	close(jobs) // 所有工作都放入後關閉通道
+	// 生產10億個任務 (用goroutine避免阻塞)
+	go func() {
+		batch := []int{} //批量儲存
+		for i := 0; i < numJobs; i++ {
+			batch = append(batch, 10) // 假設任務是存入10
+			if len(batch) == batchSize {
+				jobs <- batch   // 傳送一批
+				batch = []int{} // 重置批次
+			}
+		}
 
-	// 等待所有goroutine完成
-	wg.Wait()
-	fmt.Println("balance: ", balance)
+		// 確保剩下的也能傳送
+		if len(batch) > 0 {
+			jobs <- batch
+		}
+
+		// 所有工作分配完畢
+		close(jobs)
+	}()
+
+	wg.Wait() // 等待所有worker完成
+	fmt.Println("所有工作完成")
 	fmt.Println("Spend time:", time.Since(t))
 }

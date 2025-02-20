@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	deposit.UseDeposit()
+	deposit.UseWorker()
 	config.Init()
 	storage.Init()
 	migrate.Init()
