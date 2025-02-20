@@ -22,6 +22,14 @@ func deposit(amount int64, jobs <-chan int, wg *sync.WaitGroup) {
 }
 
 func UseDeposit() {
+	// 但這邊還是不夠有效率
+	/* 1. 太多任務同時塞入channel
+	   Go Channel雖然很強大，但jobs是個有界通道(這邊大小是1000)，當jobs被填滿時，主goroutine會阻塞，導致執行效率下降。
+	   Solution: 使用sync.WaitGroup & goroutine生產任務，讓生產與消費同時進行。
+	   2. 不需要10億個worker
+	   即使workerCount = 100，處理10億次依舊很慢，因為我們的worker仍然是一個一個處理。
+	   Solution: 增加批量處理 (Batch Processing)，一次處理多個數據，提高吞吐量。
+	*/
 	t := time.Now()
 	// 建立一個channel，作為工作佇列，存放要執行的工作
 	jobs := make(chan int, 1000) // 任務佇列
