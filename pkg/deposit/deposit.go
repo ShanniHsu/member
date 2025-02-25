@@ -8,14 +8,14 @@ import (
 
 var mu = new(sync.Mutex)
 
-var balance int64 = 1000 // 原始存款餘額
+var balance int = 1000 // 原始存款餘額
 
 const workerCount = 100 // 限制最多100個goroutine
 
 const (
-	numWorkers = 100        // worker數量
-	numJobs    = 1000000000 // 總共10億個任務
-	batchSize  = 1000       // 1個worker一次處理1000個jobs
+	numWorkers = 100       // worker數量
+	numJobs    = 100000000 // 總共10億個任務
+	batchSize  = 1000      // 1個worker一次處理1000個jobs
 )
 
 /* 優化:
@@ -31,15 +31,15 @@ const (
 */
 
 // 負責批量處理數據
-func worker(id int, jobs <-chan []int, wg *sync.WaitGroup) {
+func worker(jobs <-chan []int, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for batch := range jobs {
-		sum := 0
-		for _, num := range batch {
-			sum += num
+		for _, amount := range batch {
+			mu.Lock()
+			balance += amount
+			mu.Unlock()
 		}
-		fmt.Printf("Worder %d 處理 %d 個任務，部分結果: %d\n", id, len(batch), sum)
-		time.Sleep(10 * time.Millisecond) // 模擬運算延遲
+		//time.Sleep(10 * time.Millisecond) // 模擬運算延遲
 	}
 }
 
@@ -51,7 +51,7 @@ func UseWorker() {
 	// 啟動Worker
 	for i := 1; i <= numWorkers; i++ {
 		wg.Add(1)
-		go worker(i, jobs, &wg)
+		go worker(jobs, &wg)
 	}
 
 	// 生產10億個任務 (用goroutine避免阻塞)
@@ -75,6 +75,7 @@ func UseWorker() {
 	}()
 
 	wg.Wait() // 等待所有worker完成
+	fmt.Println("balance:", balance)
 	fmt.Println("所有工作完成")
 	fmt.Println("Spend time:", time.Since(t))
 }
