@@ -13,9 +13,9 @@ var balance int = 1000 // 原始存款餘額
 const workerCount = 100 // 限制最多100個goroutine
 
 const (
-	numWorkers = 100       // worker數量
-	numJobs    = 100000000 // 總共10億個任務
-	batchSize  = 1000      // 1個worker一次處理1000個jobs
+	numWorkers = 100        // worker數量
+	numJobs    = 1000000000 // 總共10億個任務
+	batchSize  = 1000       // 1個worker一次處理1000個jobs
 )
 
 /* 優化:
@@ -39,7 +39,22 @@ func worker(jobs <-chan []int, wg *sync.WaitGroup) {
 			balance += amount
 			mu.Unlock()
 		}
-		//time.Sleep(10 * time.Millisecond) // 模擬運算延遲
+		time.Sleep(10 * time.Millisecond) // 模擬運算延遲
+		/*Sleep.time()，讓程序變快的原因
+		(1) Go的Goroutine是「協作式調度(Cooperative Scheduling)」
+		因為Go的Goroutine是「協作式調度(Cooperative Scheduling)」，也就是goroutine在遇到阻塞點時，才會讓出CUP
+		***如果沒有阻塞點的話，Go會讓一個goroutine狂跑，其他goroutine可能無法公平獲得CPU時間***
+		(2) time.Sleep()讓出CPU，讓其他worker有機會執行
+		當我們加入time.Sleep()，goroutine會進入休眠狀態，這時Go會讓出CPU，給其他goroutine執行。這樣系統資源可以被更公平分配，提高整體吞吐量。
+		**如果沒有time.Sleep()的情況
+		如果worker沒有time.Sleep()，他們可能狂跑迴圈，導致goroutine佔據太多CPU時間，其他goroutine可能得不到執行機會，造成「忙等(busy-waiting)」。
+		(3) 模擬I/O操作的現實情況
+		time.Sleep()也可以用來模擬真實環境中的I/O延遲，比如:
+		* 網路請求 (API call)
+		* 資料庫操作 (SQL查詢)
+		* 檔案讀寫 (Disk I/O)
+		現實世界中，這些操作通常都比純計算慢很多，time.Sleep()可以幫助我們測試worker在這些情況下的表現。
+		*/
 	}
 }
 
