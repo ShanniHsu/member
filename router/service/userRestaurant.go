@@ -66,17 +66,17 @@ func (s userRestaurantService) DeletePocketRestaurant(ctx *gin.Context, req *del
 	if exist {
 		user = userCtx.(*models.User)
 	}
-	req.UserID = user.ID
+	userID := user.ID
 
 	checkList := new(get_user_restaurants.Request)
 	checkList.ID = req.ID
-	list, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, req.UserID)
+	list, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, userID)
 	if len(*list) == 0 {
 		err = errors.New("ID isn't existed!")
 		return
 	}
 
-	err = s.repo.UserRestaurantRepository.Delete(req)
+	err = s.repo.UserRestaurantRepository.DeleteByID(req.ID)
 	if err != nil {
 		err = errors.New("Delete Failed!")
 		return

@@ -3,14 +3,13 @@ package repository
 import (
 	"gorm.io/gorm"
 	"member/models"
-	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
 )
 
 type UserRestaurantRepository interface {
 	GetUserRestaurantFilter(parameter *get_user_restaurants.Request, userID int64) (resp *get_user_restaurants.Response, err error)
+	DeleteByID(id int64) (err error)
 	Create(userRestaurant *models.UserRestaurant) (err error)
-	Delete(parameter *delete_user_restaurant.Request) (err error)
 }
 
 type userRestaurantRepository struct {
@@ -52,10 +51,10 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 	return
 }
 
-func (r userRestaurantRepository) Create(userRestaurant *models.UserRestaurant) (err error) {
-	return r.DB.Create(userRestaurant).Error
+func (r userRestaurantRepository) DeleteByID(id int64) (err error) {
+	return r.DB.Delete(&models.UserRestaurant{ID: id}).Error
 }
 
-func (r userRestaurantRepository) Delete(parameter *delete_user_restaurant.Request) (err error) {
-	return r.DB.Delete(&models.UserRestaurant{ID: parameter.ID, UserID: parameter.UserID}).Error
+func (r userRestaurantRepository) Create(userRestaurant *models.UserRestaurant) (err error) {
+	return r.DB.Create(userRestaurant).Error
 }
