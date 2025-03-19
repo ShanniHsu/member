@@ -70,8 +70,8 @@ func (s userRestaurantService) DeletePocketRestaurant(ctx *gin.Context, req *del
 
 	checkList := new(get_user_restaurants.Request)
 	checkList.ID = req.ID
-	list, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, userID)
-	if len(*list) == 0 {
+	res, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, userID)
+	if res.TotalCount == 0 {
 		err = errors.New("ID isn't existed!")
 		return
 	}

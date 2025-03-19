@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"fmt"
 	"gorm.io/gorm"
 	"member/models"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
+	"strconv"
 )
 
 type UserRestaurantRepository interface {
@@ -23,7 +25,11 @@ func NewUserRestaurantRepository(db *gorm.DB) UserRestaurantRepository {
 }
 
 func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_restaurants.Request, userID int64) (resp *get_user_restaurants.Response, err error) {
-	// 上面那個沒有並沒有分配記憶體
+	page, _ := strconv.Atoi(parameter.Page)
+	pageSize, _ := strconv.Atoi(parameter.PageSize)
+	offset := (page - 1) * pageSize
+
+	fmt.Println(page, pageSize)
 	resp = &get_user_restaurants.Response{} // 指標且初始化(確保有可寫入的記憶體 == new(get_user_restaurants.Response)
 	query := r.DB.Model(&models.Restaurant{}).
 		Select("`user_restaurants`.id, `restaurants`.name, `restaurants`.address, `restaurants`.type").
@@ -44,10 +50,9 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 		query = query.Where("restaurants.address = ?", parameter.Address)
 	}
 
-	err = query.Scan(resp).Error
-	if err != nil {
-		return
-	}
+	query = query.Offset(offset).Limit(pageSize).Find(&resp.List)
+
+	query = query.Count(&resp.TotalCount)
 	return
 }
 
