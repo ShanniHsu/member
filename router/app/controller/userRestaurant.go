@@ -47,9 +47,6 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	}
 
 	page := ctx.Query("page")
-	if page == "" {
-		req.Page = "1"
-	}
 	if page != "" {
 		_, err := strconv.Atoi(page)
 		if err != nil {
@@ -58,12 +55,14 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 			})
 			return
 		}
+		req.Page = page
+	}
+
+	if req.Page == "" {
+		req.Page = "1"
 	}
 
 	pageSize := ctx.Query("page_size")
-	if pageSize == "" {
-		req.PageSize = "100"
-	}
 	if pageSize != "" {
 		_, err := strconv.Atoi(pageSize)
 		if err != nil {
@@ -72,6 +71,11 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 			})
 			return
 		}
+		req.PageSize = pageSize
+	}
+
+	if req.PageSize == "" {
+		req.PageSize = "100"
 	}
 
 	data, err := c.userRestaurant.GetPocketRestaurantList(ctx, req)
