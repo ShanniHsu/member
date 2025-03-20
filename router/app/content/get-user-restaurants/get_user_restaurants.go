@@ -10,8 +10,8 @@ type Request struct {
 }
 
 type Response struct {
-	List       List  `json:"list"`
-	TotalCount int64 `json:"total_count"`
+	List       []List `json:"list"`
+	TotalCount int64  `json:"total_count"`
 }
 
 type List struct {

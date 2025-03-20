@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"gorm.io/gorm"
 	"member/models"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
@@ -29,7 +28,6 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 	pageSize, _ := strconv.Atoi(parameter.PageSize)
 	offset := (page - 1) * pageSize
 
-	fmt.Println(page, pageSize)
 	resp = &get_user_restaurants.Response{} // 指標且初始化(確保有可寫入的記憶體 == new(get_user_restaurants.Response)
 	query := r.DB.Model(&models.Restaurant{}).
 		Select("`user_restaurants`.id, `restaurants`.name, `restaurants`.address, `restaurants`.type").
@@ -43,15 +41,16 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 	if parameter.Type != 0 {
 		query = query.Where("restaurants.type = ?", parameter.Type)
 	}
+
 	if parameter.Name != "" {
 		query = query.Where("restaurants.name = ?", parameter.Name)
 	}
+
 	if parameter.Address != "" {
 		query = query.Where("restaurants.address = ?", parameter.Address)
 	}
 
 	query = query.Offset(offset).Limit(pageSize).Find(&resp.List)
-
 	query = query.Count(&resp.TotalCount)
 	return
 }
