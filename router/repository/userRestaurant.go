@@ -50,8 +50,8 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 		query = query.Where("restaurants.address = ?", parameter.Address)
 	}
 
-	query = query.Offset(offset).Limit(pageSize).Find(&resp.List)
 	query = query.Count(&resp.TotalCount)
+	query = query.Offset(offset).Limit(pageSize).Find(&resp.List)
 	return
 }
 
