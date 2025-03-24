@@ -30,7 +30,7 @@ func (r userRestaurantRepository) GetUserRestaurantFilter(parameter *get_user_re
 
 	resp = &get_user_restaurants.Response{} // 指標且初始化(確保有可寫入的記憶體 == new(get_user_restaurants.Response)
 	query := r.DB.Model(&models.Restaurant{}).
-		Select("`user_restaurants`.id, `restaurants`.name, `restaurants`.address, `restaurants`.type").
+		Select("`user_restaurants`.id, `user_restaurants`.restaurant_id, `restaurants`.name, `restaurants`.address, `restaurants`.type").
 		Joins("JOIN user_restaurants ON restaurants.id = user_restaurants.restaurant_id").
 		Where("user_restaurants.user_id = ?", userID)
 

@@ -15,8 +15,9 @@ type Response struct {
 }
 
 type List struct {
-	ID      int64  `json:"id"`
-	Type    string `json:"type"`
-	Name    string `json:"name"`
-	Address string `json:"address"`
+	ID           int64  `json:"id"`
+	RestaurantID int64  `json:"restaurant_id"`
+	Type         string `json:"type"`
+	Name         string `json:"name"`
+	Address      string `json:"address"`
 }
