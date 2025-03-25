@@ -52,7 +52,7 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	req.Type = typeInt
 	req.ID = idInt
 
-	resp, err := c.restaurantService.GetRestaurantList(req)
+	resp, err := c.restaurantService.GetRestaurantList(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
