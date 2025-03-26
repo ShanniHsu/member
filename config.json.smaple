@@ -18,6 +18,10 @@
       "port": 6379,
       "password": "",
       "dbName": 0
+    },
+    "mongo": {
+      "host": "localhost",
+      "port": 27017,
     }
   }
 }

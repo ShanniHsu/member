@@ -39,4 +39,7 @@ func SetDefault() {
 	viper.SetDefault("database.redis.port", "6379")
 	viper.SetDefault("database.redis.password", "")
 	viper.SetDefault("database.redis.dbName", 0)
+	//mongo
+	viper.SetDefault("database.mongo.host", "localhost")
+	viper.SetDefault("database.mongo.port", 27017)
 }
