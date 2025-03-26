@@ -1,17 +1,14 @@
 package main
 
 import (
-	"member/config"
-	"member/pkg/jwt"
-	"member/pkg/storage"
-	"member/pkg/storage/migrate"
-	"member/router"
+	"member/pkg/storage/mgo"
 )
 
 func main() {
-	config.Init()
-	storage.Init()
-	migrate.Init()
-	jwt.InitJwt()
-	router.Init()
+	//config.Init()
+	//storage.Init()
+	//migrate.Init()
+	//jwt.InitJwt()
+	//router.Init()
+	mgo.Mongo()
 }
