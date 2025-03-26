@@ -3,6 +3,7 @@ package mgo
 import (
 	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -28,6 +29,17 @@ func Mongo() {
 		log.Fatal("MongoDB連線失敗: ", err)
 	}
 	fmt.Println("成功連線到 MongoDB")
+
+	// 選擇資料庫與集合
+	collection := client.Database("testdb").Collection("users")
+
+	// 插入範例資料
+	_, err = collection.InsertOne(ctx, bson.M{"name": "Alice", "age": 25})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("成功插入資料")
 
 	defer client.Disconnect(ctx)
 }
