@@ -2,8 +2,10 @@ package storage
 
 import (
 	rdb "github.com/redis/go-redis/v9"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 	"log"
+	"member/pkg/storage/mgo"
 	"member/pkg/storage/mysql"
 	"member/pkg/storage/redis"
 )
@@ -11,6 +13,7 @@ import (
 type Storage struct {
 	db  *gorm.DB
 	rdb *rdb.Client
+	mdb *mongo.Client
 }
 
 var InitStorage Storage
@@ -18,6 +21,7 @@ var InitStorage Storage
 func Init() {
 	InitStorage.db = mysql.NewStorage()
 	InitStorage.rdb = redis.NewStorage()
+	InitStorage.mdb = mgo.NewStorage()
 }
 
 // 表示都是使用指標(*Storage)
@@ -34,4 +38,11 @@ func (storage *Storage) GetRDBConnect() *rdb.Client {
 		log.Fatal("Get RDB connect failed!")
 	}
 	return storage.rdb
+}
+
+func (storage *Storage) GetMDBConnect() *mongo.Client {
+	if storage.mdb == nil {
+		log.Fatal("Get MDB connect failed!")
+	}
+	return storage.mdb
 }
