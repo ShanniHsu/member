@@ -2,6 +2,7 @@ package a1
 
 import (
 	"github.com/gin-gonic/gin"
+	"member/pkg/webSocket"
 	"member/router/app/controller"
 	"member/router/app/middleware"
 	"member/router/repository"
@@ -30,4 +31,7 @@ func Init(router *gin.Engine) {
 	auth.POST("/pocket-restaurant", api.AddPocketRestaurant)         // 加入口袋餐廳
 	auth.DELETE("/pocket-restaurant", api.DeletePocketRestaurant)    // 移除口袋餐廳
 	auth.POST("/logout", api.Logout)                                 // 登出
+
+	socket := router.Group("/socket")
+	socket.GET("", webSocket.SocketHandler)
 }

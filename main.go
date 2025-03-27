@@ -1,19 +1,17 @@
 package main
 
 import (
-	"member/pkg/webSocket"
-	"os"
+	"member/config"
+	"member/pkg/jwt"
+	"member/pkg/storage"
+	"member/pkg/storage/migrate"
+	"member/router"
 )
 
 func main() {
-	//config.Init()
-	//storage.Init()
-	//migrate.Init()
-	//jwt.InitJwt()
-	//router.Init()
-	stuck := make(chan os.Signal)
-
-	webSocket.ServerHTTP()
-
-	<-stuck
+	config.Init()
+	storage.Init()
+	migrate.Init()
+	jwt.InitJwt()
+	router.Init()
 }
