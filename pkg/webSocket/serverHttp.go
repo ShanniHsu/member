@@ -24,7 +24,10 @@ func ServerHTTP() {
 	}()
 }
 
+// 客戶端發送訊息，Server自動回覆
 func SocketHandler(c *gin.Context) {
+	// CheckOrigin: 會檢查是否跨域
+	// Buffer: 單位是Bytes，依需求設定(設為0，則為不限制大小)
 	upGrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -33,11 +36,13 @@ func SocketHandler(c *gin.Context) {
 		WriteBufferSize: 1024,
 	}
 
+	// 將HTTP連線轉換成WebSocket
 	ws, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		panic(err)
 	}
 
+	// 這邊開一個goroutine，如果有接收到斷線資訊則關閉此連線
 	defer func() {
 		closeSocketErr := ws.Close()
 		if closeSocketErr != nil {
@@ -46,11 +51,13 @@ func SocketHandler(c *gin.Context) {
 	}()
 
 	for {
+		// 監聽客戶端傳來的訊息
 		msgType, msg, err := ws.ReadMessage()
 		if err != nil {
 			panic(err)
 		}
 		fmt.Printf("Message Type: %d, Message: %s\n", msgType, string(msg))
+		// Server自動傳訊息給客戶端
 		err = ws.WriteJSON(struct {
 			Reply string `json:"reply"`
 		}{
