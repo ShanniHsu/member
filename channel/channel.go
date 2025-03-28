@@ -2,18 +2,21 @@ package channel
 
 import "fmt"
 
-func Channel() {
-	ch := make(chan int)
+var ch = make(chan int)
 
-	go func() {
-		for i := 0; i < 10; i++ {
-			ch <- i
-		}
-		close(ch)
-	}()
+func Channel() {
+
+	go handle()
 
 	// 讀取channel方式，要用for range
 	for v := range ch {
 		fmt.Println(v)
 	}
+}
+
+func handle() {
+	for i := 0; i < 10; i++ {
+		ch <- i
+	}
+	close(ch)
 }
