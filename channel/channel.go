@@ -20,3 +20,24 @@ func handle() {
 	}
 	close(ch)
 }
+
+var cc = make(chan int)
+
+func Ch() {
+	go chHandle()
+	// 讀取channel方式，要用for、v, ok := <-cc
+	for {
+		v, ok := <-cc
+		if !ok {
+			return
+		}
+		fmt.Println(v)
+	}
+}
+
+func chHandle() {
+	for i := 0; i < 10; i++ {
+		cc <- i
+	}
+	close(cc)
+}

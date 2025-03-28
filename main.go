@@ -11,6 +11,7 @@ import (
 
 func main() {
 	channel.Channel()
+	channel.Ch()
 	config.Init()
 	storage.Init()
 	migrate.Init()
