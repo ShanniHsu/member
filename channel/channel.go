@@ -49,42 +49,51 @@ func chHandle() {
 // 練習使用兩個goroutine取值跑資料
 func Foobar() {
 	str := []byte("foobar")
-	xch := make(chan byte, len(str))
-	next := make(chan struct{}) // 空結構體通道（僅用來同步）
+	chx := make(chan byte, len(str))
+	next := make(chan struct{})
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
+
 	for i := 0; i < len(str); i++ {
-		xch <- str[i]
+		chx <- str[i]
 	}
-	close(xch)
+	close(chx)
 
 	go func() {
 		defer wg.Done()
 
 		for {
-			<-next
-			v, ok := <-xch
+			stop, ok := <-next
+			if !ok {
+				return
+			}
+			v, ok := <-chx
 			if !ok {
 				close(next)
 				return
 			}
 			fmt.Println("goroutine01: ", string(v))
-			next <- struct{}{} // 用來通知，這個不會有數據
+			next <- stop
 		}
+
 	}()
 
 	go func() {
+
 		defer wg.Done()
 
 		for {
-			<-next
-			v, ok := <-xch
+			stop, ok := <-next
+			if !ok {
+				return
+			}
+			v, ok := <-chx
 			if !ok {
 				close(next)
 				return
 			}
 			fmt.Println("goroutine02: ", string(v))
-			next <- struct{}{} // 用來通知，這個不會有數據
+			next <- stop
 		}
 
 	}()
