@@ -13,6 +13,7 @@ func main() {
 	//channel.Channel()
 	//channel.Ch()
 	channel.Foobar()
+	channel.MessageSend()
 	config.Init()
 	storage.Init()
 	migrate.Init()

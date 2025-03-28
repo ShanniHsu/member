@@ -100,3 +100,32 @@ func Foobar() {
 	next <- struct{}{}
 	wg.Wait()
 }
+
+type Message struct {
+	User    string `json:"user"`
+	Message string `json:"message"`
+}
+
+var broadcast = make(chan Message)
+
+func MessageSend() {
+	msg := Message{
+		User:    "Shanni",
+		Message: "Hello",
+	}
+
+	go func() {
+
+		broadcast <- msg
+
+		close(broadcast)
+	}()
+
+	for {
+		v, ok := <-broadcast
+		if !ok {
+			return
+		}
+		fmt.Println("v:", v)
+	}
+}
