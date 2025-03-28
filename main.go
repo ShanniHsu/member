@@ -1,6 +1,7 @@
 package main
 
 import (
+	"member/channel"
 	"member/config"
 	"member/pkg/jwt"
 	"member/pkg/storage"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	channel.Channel()
 	config.Init()
 	storage.Init()
 	migrate.Init()
