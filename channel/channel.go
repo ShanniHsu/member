@@ -1,6 +1,9 @@
 package channel
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 var ch = make(chan int)
 
@@ -40,4 +43,51 @@ func chHandle() {
 		cc <- i
 	}
 	close(cc)
+}
+
+// https://blog.wu-boy.com/2022/05/read-data-from-channel-in-go/
+// 練習使用兩個goroutine取值跑資料
+func Foobar() {
+	str := []byte("foobar")
+	xch := make(chan byte, len(str))
+	next := make(chan struct{}) // 空結構體通道（僅用來同步）
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+	for i := 0; i < len(str); i++ {
+		xch <- str[i]
+	}
+	close(xch)
+
+	go func() {
+		defer wg.Done()
+
+		for {
+			<-next
+			v, ok := <-xch
+			if !ok {
+				close(next)
+				return
+			}
+			fmt.Println("goroutine01: ", string(v))
+			next <- struct{}{} // 用來通知，這個不會有數據
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		for {
+			<-next
+			v, ok := <-xch
+			if !ok {
+				close(next)
+				return
+			}
+			fmt.Println("goroutine02: ", string(v))
+			next <- struct{}{} // 用來通知，這個不會有數據
+		}
+
+	}()
+	next <- struct{}{}
+	wg.Wait()
 }

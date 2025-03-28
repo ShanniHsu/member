@@ -12,6 +12,7 @@ import (
 func main() {
 	channel.Channel()
 	channel.Ch()
+	channel.Foobar()
 	config.Init()
 	storage.Init()
 	migrate.Init()
