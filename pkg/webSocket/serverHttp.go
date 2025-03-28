@@ -44,18 +44,12 @@ func SocketHandler(c *gin.Context) {
 	// 將HTTP連線轉換成WebSocket
 	conn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
-		panic(err)
+		log.Println("WebSocket連線失敗: ", err)
+		return
 	}
 
-	// 這邊開一個goroutine，如果有接收到斷線資訊則關閉此連線
-	defer func() {
-		closeSocketErr := conn.Close()
-		if closeSocketErr != nil {
-			panic(err)
-		}
-	}()
+	defer conn.Close()
 
-	fmt.Println("conn: ", &conn)
 	// 紀錄這個客戶端
 	clients[conn] = true
 
@@ -71,19 +65,20 @@ func SocketHandler(c *gin.Context) {
 		fmt.Println("msg: ", msg)
 		// 把收到的訊息發送到廣播
 		broadcast <- msg
+	}
+}
 
-		// 以下需再檢查廣播可能有問題要調整
-
-		// 廣播訊息
-		broadcastMsg := <-broadcast
-		fmt.Println("broadcastMsg: ", broadcastMsg)
-		err = conn.WriteJSON(&broadcastMsg)
-		if err != nil {
-			log.Println("讀取錯誤: ", err)
-			conn.Close()
-			delete(clients, conn)
+func Broadcast() {
+	for {
+		msg := <-broadcast
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				log.Println("傳送訊息錯誤:", err)
+				client.Close()
+				delete(clients, client)
+			}
 		}
-
 	}
 }
 
