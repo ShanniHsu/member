@@ -16,6 +16,7 @@ func main() {
 	//channel.MessageSend()
 	channel.TestOne()
 	channel.TestTwo()
+	channel.TestThree()
 	config.Init()
 	storage.Init()
 	migrate.Init()

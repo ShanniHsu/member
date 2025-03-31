@@ -35,3 +35,24 @@ func TestTwo() {
 	fmt.Println(<-intChan) // 10
 	fmt.Println(<-intChan) //20
 }
+
+/*
+通道的關閉與遍歷
+
+建立一個 channel，名稱為 ch，它傳遞 int。
+啟動一個 goroutine，該 goroutine 會依序向 ch 發送 1、2、3，然後關閉 ch。
+在 main 函數中，使用 for range 遍歷 ch 並打印所有收到的數字。
+*/
+func TestThree() {
+	var ch = make(chan int)
+	go func() {
+		for i := 1; i <= 3; i++ {
+			ch <- i
+		}
+		close(ch)
+	}()
+
+	for v := range ch {
+		fmt.Println("TestThree: ", v)
+	}
+}
