@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Message struct {
@@ -22,6 +23,8 @@ var upGrader = websocket.Upgrader{
 		return true
 	},
 }
+
+var timeoutDuration = 30 * time.Second
 
 // 多個客戶端發送訊息
 func SocketHandler(c *gin.Context) {
@@ -42,35 +45,55 @@ func SocketHandler(c *gin.Context) {
 	// 紀錄這個客戶端
 	clients[conn] = true
 	fmt.Println("clients: ", clients)
+	// 建立一個計時器
+	lastMessageTime := time.Now()
+	timer := time.NewTimer(timeoutDuration)
 
-	for {
-		var msg Message
-		// 監聽客戶端傳來的訊息
-		err = conn.ReadJSON(&msg)
-		if err != nil {
-			if err == io.ErrUnexpectedEOF {
-				log.Println("訊息格式錯誤,請確認格式")
-				continue
+	go func() {
+		for {
+			var msg Message
+			// 監聽客戶端傳來的訊息
+			err = conn.ReadJSON(&msg)
+			if err != nil {
+				if err == io.ErrUnexpectedEOF {
+					log.Println("訊息格式錯誤,請確認格式")
+					continue
+				}
+
+				if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+					log.Println("客戶端正常關閉連線")
+					delete(clients, conn)
+					break
+				} else if websocket.IsUnexpectedCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseInternalServerErr) {
+					log.Println("客戶端異常斷線")
+					delete(clients, conn)
+					break
+				} else {
+					log.Println("其他錯誤: ", err)
+					delete(clients, conn)
+					break
+				}
+
 			}
+			// 每次收到訊息時，重新設置計時器
+			lastMessageTime = time.Now()
+			timer.Reset(timeoutDuration)
 
-			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
-				log.Println("客戶端正常關閉連線")
-				delete(clients, conn)
-				break
-			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseInternalServerErr) {
-				log.Println("客戶端異常斷線")
-				delete(clients, conn)
-				break
-			} else {
-				log.Println("其他錯誤: ", err)
-				delete(clients, conn)
-				break
-			}
-
+			// 把收到的訊息發送到廣播
+			broadcast <- msg
 		}
-		// 把收到的訊息發送到廣播
-		broadcast <- msg
+	}()
+
+	// 監聽計時器
+	for {
+		<-timer.C
+		if time.Since(lastMessageTime) >= timeoutDuration {
+			log.Println("閒置超過30秒，自動斷線")
+			conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Bye"))
+			conn.Close()
+		}
 	}
+
 }
 
 func Broadcast() {
