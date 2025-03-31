@@ -40,15 +40,28 @@ func SocketHandler(c *gin.Context) {
 
 	// 紀錄這個客戶端
 	clients[conn] = true
+	fmt.Println("clients: ", clients)
 
 	for {
 		var msg Message
 		// 監聽客戶端傳來的訊息
 		err = conn.ReadJSON(&msg)
 		if err != nil {
-			log.Println("讀取訊息錯誤: ", err)
-			delete(clients, conn)
-			break
+
+			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
+				log.Println("客戶端正常關閉連線")
+				delete(clients, conn)
+				break
+			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseInternalServerErr) {
+				log.Println("客戶端異常斷線")
+				delete(clients, conn)
+				break
+			} else {
+				log.Println("其他錯誤: ", err)
+				delete(clients, conn)
+				break
+			}
+
 		}
 		// 把收到的訊息發送到廣播
 		broadcast <- msg
