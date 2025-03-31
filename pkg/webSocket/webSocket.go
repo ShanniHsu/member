@@ -8,23 +8,6 @@ import (
 	"net/http"
 )
 
-//func ServerHTTP() {
-//	go func() {
-//		g := gin.New()
-//		g.Use(gin.Recovery())
-//		err := g.SetTrustedProxies(nil)
-//		if err != nil {
-//			panic(err)
-//		}
-//
-//		public := g.Group("/socket")
-//		public.GET("", SocketHandler)
-//		if err = g.Run(":8080"); err != nil {
-//			panic(err)
-//		}
-//	}()
-//}
-
 type Message struct {
 	User    string `json:"user"`
 	Message string `json:"message"`
@@ -48,7 +31,12 @@ func SocketHandler(c *gin.Context) {
 		return
 	}
 
-	defer conn.Close()
+	defer func() {
+		fmt.Println("用戶斷線，發送關閉訊息")
+		// 這邊是伺服器端主動優雅關閉連線
+		conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, "Bye"))
+		conn.Close()
+	}()
 
 	// 紀錄這個客戶端
 	clients[conn] = true
@@ -58,11 +46,10 @@ func SocketHandler(c *gin.Context) {
 		// 監聽客戶端傳來的訊息
 		err = conn.ReadJSON(&msg)
 		if err != nil {
-			log.Panicln("讀取訊息錯誤: ", err)
+			log.Println("讀取訊息錯誤: ", err)
 			delete(clients, conn)
 			break
 		}
-		fmt.Println("msg: ", msg)
 		// 把收到的訊息發送到廣播
 		broadcast <- msg
 	}
