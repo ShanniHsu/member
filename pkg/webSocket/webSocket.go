@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"io"
 	"log"
 	"net/http"
 )
@@ -47,6 +48,10 @@ func SocketHandler(c *gin.Context) {
 		// 監聽客戶端傳來的訊息
 		err = conn.ReadJSON(&msg)
 		if err != nil {
+			if err == io.ErrUnexpectedEOF {
+				log.Println("訊息格式錯誤,請確認格式")
+				continue
+			}
 
 			if websocket.IsCloseError(err, websocket.CloseNormalClosure, websocket.CloseGoingAway) {
 				log.Println("客戶端正常關閉連線")
