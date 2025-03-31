@@ -12,8 +12,9 @@ import (
 func main() {
 	//channel.Channel()
 	//channel.Ch()
-	channel.Foobar()
-	channel.MessageSend()
+	//channel.Foobar()
+	//channel.MessageSend()
+	channel.TestOne()
 	config.Init()
 	storage.Init()
 	migrate.Init()
