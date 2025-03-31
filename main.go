@@ -15,6 +15,7 @@ func main() {
 	//channel.Foobar()
 	//channel.MessageSend()
 	channel.TestOne()
+	channel.TestTwo()
 	config.Init()
 	storage.Init()
 	migrate.Init()
