@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// 基礎題
 /*
 1. 單向通道
 請寫一個函數 sendData，它接收一個「只能發送數據」的通道（chan<- int），並依次向通道發送 1, 2, 3, 4, 5。
@@ -23,6 +24,16 @@ import (
 /*
 3. 兩個通道的數據合併
 請建立兩個 channel，分別在兩個 goroutine 中發送數據，然後在 main 函數中，使用 select 監聽兩個 channel，並將收到的數據打印出來。
+*/
+
+// 進階題
+/*
+4. 10 個 goroutine 同時計算，使用 channel 收集結果
+請寫一個程式：
+
+啟動 10 個 goroutine，每個 goroutine 計算 i * i (i 為 0~9)，並將結果發送到 channel。
+
+main 函數收集 channel 中的結果，並打印出來。
 */
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
@@ -77,5 +88,23 @@ func Exam() {
 		fmt.Println("Receive that ch2 send: ", msg)
 	case msg := <-ch3:
 		fmt.Println("Receive that ch3 send: ", msg)
+	}
+
+	//4.
+	var ch4 = make(chan int, 10)
+	for i := 0; i < 10; i++ {
+		go func(i int) {
+			sum := i * i
+			ch4 <- sum
+		}(i)
+	}
+
+	/*這邊不使用因為for range會一直等待讀取channel，直到channel被關閉，使用會deadlock
+	for value := range ch4 {
+		fmt.Println("value:", value)
+	}*/
+
+	for i := 0; i < 10; i++ {
+		fmt.Println("第4題: ", <-ch4)
 	}
 }
