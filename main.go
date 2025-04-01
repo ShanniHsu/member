@@ -20,6 +20,7 @@ func main() {
 	channel.TestOneAdvance()
 	channel.TestTwoAdvance()
 	channel.TestThreeAdvance()
+	channel.Exam()
 	config.Init()
 	storage.Init()
 	migrate.Init()
