@@ -2,6 +2,7 @@ package channel
 
 import (
 	"fmt"
+	"time"
 )
 
 /*
@@ -17,6 +18,11 @@ import (
 在 main 函數內嘗試寫入數據，觀察是否會阻塞。
 
 使用 select 語句實現 非阻塞讀取與寫入，當無數據可讀時，打印 "No data received"，當無法寫入時，打印 `"No space to send"。
+*/
+
+/*
+3. 兩個通道的數據合併
+請建立兩個 channel，分別在兩個 goroutine 中發送數據，然後在 main 函數中，使用 select 監聽兩個 channel，並將收到的數據打印出來。
 */
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
@@ -49,5 +55,27 @@ func Exam() {
 		fmt.Println("Send 10 to channel")
 	default:
 		fmt.Println("No space to send")
+	}
+
+	//3.
+	var ch2 = make(chan string)
+	var ch3 = make(chan string)
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		ch2 <- "Send ch2"
+	}()
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		ch3 <- "Send ch3"
+	}()
+
+	// 這邊不加上default是為了等待channel接收到數據後才執行，讓他保持阻塞(blocking)，直到channel傳來數據
+	select {
+	case msg := <-ch2:
+		fmt.Println("Receive that ch2 send: ", msg)
+	case msg := <-ch3:
+		fmt.Println("Receive that ch3 send: ", msg)
 	}
 }
