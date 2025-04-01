@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"context"
 	"fmt"
 	"time"
 )
@@ -60,5 +61,34 @@ func TestTwoAdvance() {
 
 	time.Sleep(2 * time.Second)
 	done <- true
+	time.Sleep(500 * time.Millisecond)
+}
+
+/*
+使用 context.WithCancel 取消 goroutine
+
+使用 context.WithCancel 來管理 goroutine 的生命週期。
+啟動一個 goroutine，該 goroutine 會每 500ms 打印 "Working..."，直到收到 context 的取消訊號後停止，並打印 "Worker stopped due to cancellation"。
+main 函數讓 goroutine 執行 2 秒，然後調用 cancel() 來取消 goroutine。
+*/
+
+func TestThreeAdvance() {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	go func(ctx context.Context) {
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("Worker stopped due to cancellation")
+				return
+			default:
+				fmt.Println("Working...")
+				time.Sleep(500 * time.Millisecond)
+			}
+		}
+	}(ctx)
+
+	time.Sleep(2 * time.Second)
+	cancel()
 	time.Sleep(500 * time.Millisecond)
 }
