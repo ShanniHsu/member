@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -63,6 +64,12 @@ main 函數產生 20 個任務（任務是 i * i）。
 啟動 5 個 worker goroutine，並將任務分發給 worker，讓它們處理。
 
 worker 完成後將結果發送到 result 通道，最後 main 收集結果並打印。
+*/
+
+/*
+8. context 控制超時與取消
+請實作一個函數 longRunningTask(ctx context.Context)，該函數模擬一個長時間運行的任務（5 秒），但允許在 3 秒 時間內取消執行。
+main 函數在 3 秒 後調用 cancel()，如果成功取消，則打印 "Task cancelled"，否則打印 "Task completed"。
 */
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
@@ -206,4 +213,18 @@ func Exam() {
 	for i := 0; i < 20; i++ {
 		fmt.Println("第7題:", <-results)
 	}
+
+	//8.
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	go func(ctx context.Context) {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Task cancelled")
+			return
+		case <-time.After(5 * time.Second):
+			fmt.Println("Task completed")
+		}
+	}(ctx)
+	time.Sleep(4 * time.Second) // 確保cancel有作用
 }
