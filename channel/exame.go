@@ -52,6 +52,18 @@ main 函數收集 channel 中的結果，並打印出來。
 6. 使用 fan-in 合併多個通道
 請實作一個 fanIn 函數，它接收多個 channel，並將它們的數據合併到一個通道，最後 main 函數讀取該通道的數據並打印出來。
 */
+
+// 高級題
+/*
+7. 限制併發數量（Worker Pool 模式）
+請實作一個「工作池（Worker Pool）」：
+
+main 函數產生 20 個任務（任務是 i * i）。
+
+啟動 5 個 worker goroutine，並將任務分發給 worker，讓它們處理。
+
+worker 完成後將結果發送到 result 通道，最後 main 收集結果並打印。
+*/
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
 		ch <- i
@@ -174,4 +186,24 @@ func Exam() {
 		fmt.Println("value: ", value)
 	}
 
+	//7.
+	var jobs = make(chan int, 20)    // 20個任務
+	var results = make(chan int, 20) // 得到的結果
+
+	for j := 0; j < 5; j++ {
+		go func() {
+			for job := range jobs {
+				results <- job * job
+			}
+		}()
+	}
+
+	for i := 0; i < 20; i++ {
+		jobs <- i
+	}
+	close(jobs)
+
+	for i := 0; i < 20; i++ {
+		fmt.Println("第7題:", <-results)
+	}
 }
