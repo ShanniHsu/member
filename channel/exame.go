@@ -47,11 +47,30 @@ main 函數收集 channel 中的結果，並打印出來。
 
 觀察結果是否為 5000，如果不是，請修正程式使其正確運行。
 */
+
+/*
+6. 使用 fan-in 合併多個通道
+請實作一個 fanIn 函數，它接收多個 channel，並將它們的數據合併到一個通道，最後 main 函數讀取該通道的數據並打印出來。
+*/
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
 		ch <- i
 	}
 	close(ch)
+}
+
+func fanIn(chans ...<-chan int) <-chan int {
+	var out = make(chan int)
+	go func() {
+		time.Sleep(1 * time.Second)
+		for _, ch := range chans {
+			for v := range ch {
+				out <- v
+			}
+		}
+		close(out)
+	}()
+	return out
 }
 
 func Exam() {
@@ -138,5 +157,21 @@ func Exam() {
 	}
 	wg.Wait() // 阻塞主goroutine，直到計數歸零才繼續執行
 	fmt.Println("counter:", counter)
+
+	//6.
+	var ch5 = make(chan int)
+	var ch6 = make(chan int, 2)
+	go func() {
+		time.Sleep(1 * time.Second)
+		ch5 <- 1
+		ch6 <- 2
+		ch6 <- 3
+		close(ch5)
+		close(ch6)
+	}()
+	x := fanIn(ch5, ch6)
+	for value := range x {
+		fmt.Println("value: ", value)
+	}
 
 }
