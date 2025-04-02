@@ -2,6 +2,7 @@ package channel
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
@@ -34,6 +35,17 @@ import (
 啟動 10 個 goroutine，每個 goroutine 計算 i * i (i 為 0~9)，並將結果發送到 channel。
 
 main 函數收集 channel 中的結果，並打印出來。
+*/
+
+/*
+5. 競態條件測試
+請寫一段程式：
+
+建立一個 int 變數 counter，啟動 5 個 goroutine，每個 goroutine 嘗試 同時 增加 counter 的值 1000 次。
+
+在 main 函數中等待所有 goroutine 結束，然後打印 counter。
+
+觀察結果是否為 5000，如果不是，請修正程式使其正確運行。
 */
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
@@ -107,4 +119,24 @@ func Exam() {
 	for i := 0; i < 10; i++ {
 		fmt.Println("第4題: ", <-ch4)
 	}
+
+	//5.
+	var counter int
+	var wg sync.WaitGroup
+	var mu sync.Mutex
+
+	for j := 0; j < 5; j++ {
+		wg.Add(1) // 增加一個計數
+		go func() {
+			defer wg.Done() // 減少一個計數，表示goroutine完成
+			for i := 0; i < 1000; i++ {
+				mu.Lock()
+				counter++ // 主要是有多個goroutine會同時修改counter，有可能會出現不對的數值，所以才需要加上鎖
+				mu.Unlock()
+			}
+		}()
+	}
+	wg.Wait() // 阻塞主goroutine，直到計數歸零才繼續執行
+	fmt.Println("counter:", counter)
+
 }
