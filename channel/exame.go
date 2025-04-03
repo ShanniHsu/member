@@ -71,6 +71,10 @@ worker 完成後將結果發送到 result 通道，最後 main 收集結果並�
 請實作一個函數 longRunningTask(ctx context.Context)，該函數模擬一個長時間運行的任務（5 秒），但允許在 3 秒 時間內取消執行。
 main 函數在 3 秒 後調用 cancel()，如果成功取消，則打印 "Task cancelled"，否則打印 "Task completed"。
 */
+
+/*
+9. channel 死鎖與修復
+*/
 func sendData(ch chan<- int) {
 	for i := 1; i <= 5; i++ {
 		ch <- i
@@ -227,4 +231,22 @@ func Exam() {
 		}
 	}(ctx)
 	time.Sleep(4 * time.Second) // 確保cancel有作用
+
+	//9.
+	/*
+		ch9 := make(chan int)
+			ch9 <- 10
+			fmt.Println(<-ch9)
+	*/
+
+	ch9 := make(chan int)
+	go func() {
+		ch9 <- 10 // 因為無緩衝，一傳送就需要有接收的，不然就會deadlock
+	}()
+
+	fmt.Println(<-ch9)
+
+	ch10 := make(chan int, 1)
+	ch10 <- 10 // 因為無緩衝，一傳送就需要有接收的，不然就會deadlock
+	fmt.Println(<-ch10)
 }
