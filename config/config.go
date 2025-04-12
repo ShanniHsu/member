@@ -24,6 +24,9 @@ func Init() {
 }
 
 func SetDefault() {
+	//web
+	viper.SetDefault("web.addr", "0.0.0.0")
+	viper.SetDefault("web.port", "8080")
 	//mysql
 	viper.SetDefault("database.mysql.userName", "root")
 	viper.SetDefault("database.mysql.password", "password")

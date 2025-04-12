@@ -1,7 +1,9 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"log"
 	"member/router/app/api/a1"
 	"member/router/middleware"
@@ -10,7 +12,10 @@ import (
 
 func Init() {
 	r := newRouter()
-	r.Run(":8888") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	addr := viper.GetString("web.addr")
+	port := viper.GetString("web.port")
+	routerAddr := fmt.Sprintf("%s:%s", addr, port)
+	r.Run(routerAddr) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
 
 func newRouter() *gin.Engine {
