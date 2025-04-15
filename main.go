@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	//channel.Channel()
-	//channel.Ch()
-	//channel.Foobar()
-	//channel.MessageSend()
+	channel.Channel()
+	channel.Ch()
+	channel.Foobar()
+	channel.MessageSend()
 	channel.TestOne()
 	channel.TestTwo()
 	channel.TestThree()
@@ -21,6 +21,7 @@ func main() {
 	channel.TestTwoAdvance()
 	channel.TestThreeAdvance()
 	channel.Exam()
+	channel.WorkPool()
 	config.Init()
 	storage.Init()
 	migrate.Init()
