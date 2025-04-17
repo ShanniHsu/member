@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"member/channel"
 	"member/config"
 	"member/pkg/jwt"
@@ -22,6 +23,7 @@ func main() {
 	channel.TestThreeAdvance()
 	channel.Exam()
 	channel.WorkPool()
+	fmt.Println(channel.Reverse("EXAM"))
 	config.Init()
 	storage.Init()
 	migrate.Init()

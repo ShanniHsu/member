@@ -250,3 +250,12 @@ func Exam() {
 	ch10 <- 10 // 因為無緩衝，一傳送就需要有接收的，不然就會deadlock
 	fmt.Println(<-ch10)
 }
+
+func Reverse(s string) (result string) {
+	input := []rune(s) // 以處理unicode或utf-8字符(1個占4個字節長度)
+	output := make([]rune, len(input))
+	for i := 0; i < len(input); i++ {
+		output[i] = input[len(output)-i-1]
+	}
+	return string(output)
+}
