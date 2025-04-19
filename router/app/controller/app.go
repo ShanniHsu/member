@@ -6,6 +6,7 @@ import (
 )
 
 type AppController interface {
+	SendMail(c *gin.Context)
 	Register(c *gin.Context)
 	Login(c *gin.Context)
 	GetUserInfo(c *gin.Context)

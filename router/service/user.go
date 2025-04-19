@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"member/models"
@@ -15,6 +16,7 @@ import (
 )
 
 type User interface {
+	SendMail() (err error)
 	Register(req *register.Request) (err error)
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
@@ -30,6 +32,28 @@ func NewUserService(repo repository.Repo) User {
 	return &userService{
 		repo: repo,
 	}
+}
+
+func (s userService) SendMail() (err error) {
+	users, err := s.repo.UserRepository.GetAllUsers()
+	if err != nil {
+		err = errors.New("Get all users failed!")
+		return
+	}
+
+	if len(*users) == 0 {
+		err = errors.New("No users found!")
+		return
+	}
+
+	var userSlice []string
+	for _, user := range *users {
+		if user.Email != "" {
+			userSlice = append(userSlice, user.Email)
+		}
+	}
+	fmt.Println("userSlice: ", userSlice)
+	return
 }
 
 func (s userService) Register(req *register.Request) (err error) {

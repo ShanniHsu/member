@@ -18,8 +18,9 @@ func Init(router *gin.Engine) {
 		newRestaurantService,
 		newUserRestaurantService,
 	)
-	router.POST("/register", api.Register) // 註冊
-	router.POST("/login", api.Login)       // 登入
+	router.POST("/admin/send-mail", api.SendMail) // 寄送信件
+	router.POST("/register", api.Register)        // 註冊
+	router.POST("/login", api.Login)              // 登入
 
 	auth := router.Group("/auth")
 	auth.Use(middleware.Auth(newUserService))

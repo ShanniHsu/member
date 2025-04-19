@@ -9,6 +9,20 @@ import (
 	"net/http"
 )
 
+func (c appController) SendMail(ctx *gin.Context) {
+	err := c.userService.SendMail()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Send mail successfully!",
+	})
+	return
+}
+
 func (c appController) Register(ctx *gin.Context) {
 	req := new(register.Request)
 	err := ctx.ShouldBindJSON(req)
