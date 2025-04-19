@@ -42,4 +42,8 @@ func SetDefault() {
 	viper.SetDefault("database.redis.port", "6379")
 	viper.SetDefault("database.redis.password", "")
 	viper.SetDefault("database.redis.dbName", 0)
+	//mailgun
+	viper.SetDefault("mailgun.domain", "")
+	viper.SetDefault("mailgun.privateAPIKey", "")
+	viper.SetDefault("mailgun.sender", "")
 }
