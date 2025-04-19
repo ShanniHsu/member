@@ -9,17 +9,10 @@ import (
 	"time"
 )
 
-// Your available domain names can be found here:
-// (https://app.mailgun.com/app/domains)
-var yourDomain string = viper.GetString("mailgun.domain") // e.g. mg.yourcompany.com
-
-// You can find the Private API Key in your Account Menu, under "Settings":
-// (https://app.mailgun.com/app/account/security)
-var privateAPIKey string = viper.GetString("mailgun.privateAPIKey")
-
-var sender string = viper.GetString("mailgun.sender")
-
 func SendMail(subject string, email string, body string) (err error) {
+	var yourDomain string = viper.GetString("mailgun.domain")
+	var privateAPIKey string = viper.GetString("mailgun.privateAPIKey")
+	var sender string = viper.GetString("mailgun.sender")
 	// Create an instance of the Mailgun Client
 	mg := mailgun.NewMailgun(yourDomain, privateAPIKey)
 	//When you have an EU-domain, you must specify the endpoint:

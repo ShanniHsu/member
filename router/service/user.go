@@ -2,12 +2,12 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/argon2"
 	"member/pkg/jwt"
+	"member/pkg/mailgun"
 	"member/pkg/uuid"
 	"member/router/app/content/get-user"
 	"member/router/app/content/login"
@@ -52,7 +52,10 @@ func (s userService) SendMail() (err error) {
 			userSlice = append(userSlice, user.Email)
 		}
 	}
-	fmt.Println("userSlice: ", userSlice)
+	err = mailgun.SendMail("Test subject", "shanni.hsu@hearts.com.tw", "Test content")
+	if err != nil {
+		return
+	}
 	return
 }
 

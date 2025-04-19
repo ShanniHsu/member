@@ -22,11 +22,11 @@
       "port": 6379,
       "password": "",
       "dbName": 0
-    },
-    "mailgun": {
-       "domain": "",
-       "privateAPIKey": "",
-       "sender": ""
     }
+  },
+  "mailgun": {
+     "domain": "",
+     "privateAPIKey": "",
+     "sender": ""
   }
 }
