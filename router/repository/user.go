@@ -13,6 +13,7 @@ type UserRepository interface {
 	GetUserByAccount(account string) (user *models.User, err error)
 	GetUserByID(id int64) (user *models.User, err error)
 	GetUserByToken(token string) (user *models.User, err error)
+	GetAllUsers() (users *[]models.User, err error)
 	Create(user *models.User) (err error)
 	Update(user *models.User, newData map[string]interface{}) (err error)
 	SetRedis(key string, value string, expiration time.Duration) (err error)
@@ -48,6 +49,12 @@ func (r userRepository) GetUserByID(id int64) (user *models.User, err error) {
 func (r userRepository) GetUserByToken(token string) (user *models.User, err error) {
 	user = new(models.User)
 	err = r.DB.Where("token = ?", token).First(&user).Error
+	return
+}
+
+func (r userRepository) GetAllUsers() (users *[]models.User, err error) {
+	users = new([]models.User)
+	err = r.DB.Model(&models.User{}).Find(&users).Error
 	return
 }
 
