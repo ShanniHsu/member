@@ -2,6 +2,7 @@ package mailgun
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/mailgun/mailgun-go/v4"
 	"github.com/spf13/viper"
@@ -14,6 +15,10 @@ func SendMail(subject string, emails []string, body string) (err error) {
 	var yourDomain string = viper.GetString("mailgun.domain")
 	var privateAPIKey string = viper.GetString("mailgun.privateAPIKey")
 	var sender string = viper.GetString("mailgun.sender")
+	if yourDomain == "" || privateAPIKey == "" || sender == "" {
+		err = errors.New("Mailgun config error!")
+		return
+	}
 	// Create an instance of the Mailgun Client
 	mg := mailgun.NewMailgun(yourDomain, privateAPIKey)
 	//When you have an EU-domain, you must specify the endpoint:
