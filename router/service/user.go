@@ -53,7 +53,8 @@ func (s userService) SendMail() (err error) {
 			userSlice = append(userSlice, user.Email)
 		}
 	}
-	err = mailgun.SendMail("Test subject", "shanni.hsu@hearts.com.tw", "Test content")
+
+	err = mailgun.SendMail("Test subject", userSlice, "Test content")
 	if err != nil {
 		return
 	}
