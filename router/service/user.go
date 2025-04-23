@@ -46,7 +46,8 @@ func (s userService) SendMail() (err error) {
 		return
 	}
 
-	var userSlice []string
+	// 可避免頻繁重新配置記憶體
+	var userSlice = make([]string, 0, len(*users)) //預設容量為使用者總數
 	for _, user := range *users {
 		if user.Email != "" {
 			userSlice = append(userSlice, user.Email)
