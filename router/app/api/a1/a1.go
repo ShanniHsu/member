@@ -2,6 +2,7 @@ package a1
 
 import (
 	"github.com/gin-gonic/gin"
+	"member/pkg/mailgun"
 	"member/router/app/controller"
 	"member/router/app/middleware"
 	"member/router/repository"
@@ -10,7 +11,8 @@ import (
 
 func Init(router *gin.Engine) {
 	newRepo := repository.NewRepository()
-	newUserService := service.NewUserService(newRepo)
+	newMailer := mailgun.NewMailConfig()
+	newUserService := service.NewUserService(newRepo, newMailer)
 	newRestaurantService := service.NewRestaurantService(newRepo)
 	newUserRestaurantService := service.NewUserRestaurantService(newRepo)
 	api := controller.NewAppController(

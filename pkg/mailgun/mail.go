@@ -2,64 +2,51 @@ package mailgun
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/mailgun/mailgun-go/v4"
 	"github.com/spf13/viper"
 	"log"
-	"net/http"
 	"sync"
 	"time"
 )
 
 // class 成員變數
-type mailConfig struct {
+type MailConfig struct {
 	Domain     string `json:"domain"`
 	PrivateKey string `json:"private_key" `
 	Sender     string `json:"sender"`
 }
 
 // constructor 用來初始化
-func NewMailConfig(domain string, privateKey string, sender string) *mailConfig {
-	return &mailConfig{
-		Domain:     domain,
-		PrivateKey: privateKey,
-		Sender:     sender,
+func NewMailConfig() *MailConfig {
+	return &MailConfig{
+		Domain:     viper.GetString("mailgun.domain"),
+		PrivateKey: viper.GetString("mailgun.privateAPIKey"),
+		Sender:     viper.GetString("mailgun.sender"),
 	}
 }
 
+type Mail interface {
+	SendMail(subject string, emails []string, body string) (err error)
+}
+
 // Method
-func (m *mailConfig) CheckConfig() (config *mailConfig) {
-	var ctx *gin.Context
-	var yourDomain string = viper.GetString("mailgun.domain")
-	var privateAPIKey string = viper.GetString("mailgun.privateAPIKey")
-	var sender string = viper.GetString("mailgun.sender")
-	if yourDomain == "" || privateAPIKey == "" || sender == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "Mailgun config error!",
-		})
+func (m *MailConfig) CheckConfig() (err error) {
+	if m.Domain == "" || m.PrivateKey == "" || m.Sender == "" {
+		err = errors.New("Mailgun config error!")
 		return
-	}
-	config = &mailConfig{
-		Domain:     yourDomain,
-		PrivateKey: privateAPIKey,
-		Sender:     sender,
 	}
 	return
 }
 
-func (m *mailConfig) SendMail(subject string, emails []string, body string) {
-	var yourDomain string
-	var privateAPIKey string
-	var sender string
-	config := m.CheckConfig()
-	if config != nil {
-		yourDomain = config.Domain
-		privateAPIKey = config.PrivateKey
-		sender = config.Sender
+func (m *MailConfig) SendMail(subject string, emails []string, body string) (err error) {
+	err = m.CheckConfig()
+	if err != nil {
+		return
 	}
 	// Create an instance of the Mailgun Client
-	mg := mailgun.NewMailgun(yourDomain, privateAPIKey)
+	mg := mailgun.NewMailgun(m.Domain, m.PrivateKey)
 	//When you have an EU-domain, you must specify the endpoint:
 	//mg.SetAPIBase("https://api.eu.mailgun.net/v3")
 
@@ -78,7 +65,7 @@ func (m *mailConfig) SendMail(subject string, emails []string, body string) {
 		go func(id int) {
 			defer wg.Done()
 			for job := range mailsCh {
-				message := mg.NewMessage(sender, subject, body, job)
+				message := mg.NewMessage(m.Sender, subject, body, job)
 				ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 				defer cancel()
 

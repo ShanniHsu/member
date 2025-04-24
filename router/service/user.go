@@ -25,12 +25,14 @@ type User interface {
 }
 
 type userService struct {
-	repo repository.Repo
+	repo   repository.Repo
+	mailer mailgun.Mail // 這是interface，不綁定實作
 }
 
-func NewUserService(repo repository.Repo) User {
+func NewUserService(repo repository.Repo, mailer mailgun.Mail) User {
 	return &userService{
-		repo: repo,
+		repo:   repo,
+		mailer: mailer,
 	}
 }
 
@@ -54,7 +56,13 @@ func (s userService) SendMail() (err error) {
 		}
 	}
 
-	err = mailgun.SendMail("Test subject", userSlice, "Test content")
+	go func() {
+		err = s.mailer.SendMail("Test subject", userSlice, "This is a test email")
+		if err != nil {
+			return
+		}
+	}()
+	//err = mailgun.SendMail("Test subject", userSlice, "Test content")
 	if err != nil {
 		return
 	}
