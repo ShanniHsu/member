@@ -2,22 +2,61 @@ package mailgun
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/mailgun/mailgun-go/v4"
 	"github.com/spf13/viper"
 	"log"
+	"net/http"
 	"sync"
 	"time"
 )
 
-func SendMail(subject string, emails []string, body string) (err error) {
+// class 成員變數
+type mailConfig struct {
+	Domain     string `json:"domain"`
+	PrivateKey string `json:"private_key" `
+	Sender     string `json:"sender"`
+}
+
+// constructor 用來初始化
+func NewMailConfig(domain string, privateKey string, sender string) *mailConfig {
+	return &mailConfig{
+		Domain:     domain,
+		PrivateKey: privateKey,
+		Sender:     sender,
+	}
+}
+
+// Method
+func (m *mailConfig) CheckConfig() (config *mailConfig) {
+	var ctx *gin.Context
 	var yourDomain string = viper.GetString("mailgun.domain")
 	var privateAPIKey string = viper.GetString("mailgun.privateAPIKey")
 	var sender string = viper.GetString("mailgun.sender")
 	if yourDomain == "" || privateAPIKey == "" || sender == "" {
-		err = errors.New("Mailgun config error!")
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Mailgun config error!",
+		})
 		return
+	}
+	config = &mailConfig{
+		Domain:     yourDomain,
+		PrivateKey: privateAPIKey,
+		Sender:     sender,
+	}
+	return
+}
+
+func (m *mailConfig) SendMail(subject string, emails []string, body string) {
+	var yourDomain string
+	var privateAPIKey string
+	var sender string
+	config := m.CheckConfig()
+	if config != nil {
+		yourDomain = config.Domain
+		privateAPIKey = config.PrivateKey
+		sender = config.Sender
 	}
 	// Create an instance of the Mailgun Client
 	mg := mailgun.NewMailgun(yourDomain, privateAPIKey)
