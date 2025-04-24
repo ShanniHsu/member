@@ -62,7 +62,7 @@ func (m *MailConfig) SendMail(subject string, emails []string, body string) (err
 
 	for i := 0; i < workerSize; i++ {
 		wg.Add(1)
-		go func(id int) {
+		go func(size int) {
 			defer wg.Done()
 			for job := range mailsCh {
 				message := mg.NewMessage(m.Sender, subject, body, job)

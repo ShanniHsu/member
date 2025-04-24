@@ -56,16 +56,14 @@ func (s userService) SendMail() (err error) {
 		}
 	}
 
+	// 背景執行寄信
 	go func() {
 		err = s.mailer.SendMail("Test subject", userSlice, "This is a test email")
 		if err != nil {
 			return
 		}
 	}()
-	//err = mailgun.SendMail("Test subject", userSlice, "Test content")
-	if err != nil {
-		return
-	}
+
 	return
 }
 
