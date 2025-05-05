@@ -13,10 +13,12 @@ func Init(router *gin.Engine) {
 	newUserService := service.NewUserService(newRepo)
 	newRestaurantService := service.NewRestaurantService(newRepo)
 	newUserRestaurantService := service.NewUserRestaurantService(newRepo)
+	newSeatService := service.NewSeatService(newRepo)
 	api := controller.NewAppController(
 		newUserService,
 		newRestaurantService,
 		newUserRestaurantService,
+		newSeatService,
 	)
 	router.POST("/register", api.Register) // 註冊
 	router.POST("/login", api.Login)       // 登入
@@ -29,5 +31,6 @@ func Init(router *gin.Engine) {
 	auth.GET("/pocket-restaurant-list", api.GetPocketRestaurantList) // 口袋餐廳列表
 	auth.POST("/pocket-restaurant", api.AddPocketRestaurant)         // 加入口袋餐廳
 	auth.DELETE("/pocket-restaurant", api.DeletePocketRestaurant)    // 移除口袋餐廳
+	auth.GET("/seats", api.GetSeats)                                 // 查看座位
 	auth.POST("/logout", api.Logout)                                 // 登出
 }

@@ -2,8 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"member/pkg/storage"
+	"member/router/repository"
 )
 
 func InitSeats() {
@@ -23,4 +25,27 @@ func InitSeats() {
 		}
 	}
 	fmt.Println("Seats initialized!")
+}
+
+type SeatService interface {
+	GetSeats() (err error)
+}
+
+type seat struct {
+	repo repository.Repo
+}
+
+func NewSeatService(repo repository.Repo) SeatService {
+	return &seat{
+		repo: repo,
+	}
+}
+
+func (s *seat) GetSeats() (err error) {
+	err = s.repo.SeatRepository.ScanRedis(0, "seat:*:status", 0)
+	if err != nil {
+		err = errors.New("redis scan error")
+		return
+	}
+	return
 }

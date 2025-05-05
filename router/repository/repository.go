@@ -6,6 +6,7 @@ type Repo struct {
 	UserRepository           UserRepository
 	RestaurantRepository     RestaurantRepository
 	UserRestaurantRepository UserRestaurantRepository
+	SeatRepository           SeatRepository
 }
 
 func NewRepository() Repo {
@@ -15,5 +16,6 @@ func NewRepository() Repo {
 		UserRepository:           NewUserRepository(db, redis),
 		RestaurantRepository:     NewRestaurantRepository(db),
 		UserRestaurantRepository: NewUserRestaurantRepository(db),
+		SeatRepository:           NewSeatRepository(redis),
 	}
 }
