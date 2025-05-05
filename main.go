@@ -6,6 +6,7 @@ import (
 	"member/pkg/storage"
 	"member/pkg/storage/migrate"
 	"member/router"
+	"member/router/service"
 )
 
 func main() {
@@ -13,5 +14,6 @@ func main() {
 	storage.Init()
 	migrate.Init()
 	jwt.InitJwt()
+	service.InitSeats()
 	router.Init()
 }
