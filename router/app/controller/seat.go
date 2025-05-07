@@ -6,7 +6,7 @@ import (
 )
 
 func (c appController) GetSeats(ctx *gin.Context) {
-	err := c.seatService.GetSeats()
+	resp, err := c.seatService.GetSeats()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -15,6 +15,7 @@ func (c appController) GetSeats(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get all seats successfully",
+		"data":    resp,
 	})
 	return
 }

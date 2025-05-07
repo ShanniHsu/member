@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"member/pkg/storage"
+	get_seats "member/router/app/content/get-seats"
 	"member/router/repository"
 )
 
@@ -28,7 +29,7 @@ func InitSeats() {
 }
 
 type SeatService interface {
-	GetSeats() (err error)
+	GetSeats() (resp []get_seats.Response, err error)
 }
 
 type seat struct {
@@ -41,11 +42,21 @@ func NewSeatService(repo repository.Repo) SeatService {
 	}
 }
 
-func (s *seat) GetSeats() (err error) {
-	err = s.repo.SeatRepository.ScanRedis(0, "seat:*:status", 0)
+func (s *seat) GetSeats() (resp []get_seats.Response, err error) {
+	value, err := s.repo.SeatRepository.ScanRedis(0, "seat:*:status", 0)
 	if err != nil {
 		err = errors.New("redis scan error")
 		return
 	}
+
+	resp = make([]get_seats.Response, 0, len(value))
+	for k, v := range value {
+		item := get_seats.Response{
+			Seat:   k,
+			Status: v,
+		}
+		resp = append(resp, item)
+	}
+	resp = resp
 	return
 }
