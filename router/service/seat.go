@@ -57,6 +57,5 @@ func (s *seat) GetSeats() (resp []get_seats.Response, err error) {
 		}
 		resp = append(resp, item)
 	}
-	resp = resp
 	return
 }
