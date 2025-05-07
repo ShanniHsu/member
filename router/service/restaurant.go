@@ -12,8 +12,8 @@ import (
 )
 
 type Restaurant interface {
-	GetRestaurants() (restaurants *[]models.Restaurant, err error)
-	GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants *[]models.Restaurant, err error)
+	GetRestaurants() (restaurants []models.Restaurant, err error)
+	GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants []models.Restaurant, err error)
 }
 
 type restaurantService struct {
@@ -26,7 +26,7 @@ func NewRestaurantService(repo repository.Repo) Restaurant {
 	}
 }
 
-func (s restaurantService) GetRestaurants() (restaurants *[]models.Restaurant, err error) {
+func (s restaurantService) GetRestaurants() (restaurants []models.Restaurant, err error) {
 	restaurants, err = s.repo.RestaurantRepository.GetRestaurants()
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Restaurants isn't found!")
@@ -35,7 +35,7 @@ func (s restaurantService) GetRestaurants() (restaurants *[]models.Restaurant, e
 	return
 }
 
-func (s restaurantService) GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants *[]models.Restaurant, err error) {
+func (s restaurantService) GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants []models.Restaurant, err error) {
 	restaurantAll, err := s.repo.RestaurantRepository.GetRestaurantFilter(req)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Restaurants isn't found!")
@@ -49,7 +49,7 @@ func (s restaurantService) GetRestaurantList(ctx *gin.Context, req *get_restaura
 	}
 
 	var parameter = new(get_user_restaurants.Request)
-	newRestaurantList := *restaurantAll
+	newRestaurantList := restaurantAll
 	parameter.Type = req.Type
 	parameter.Page = "1"
 	parameter.PageSize = "500"
@@ -65,6 +65,6 @@ func (s restaurantService) GetRestaurantList(ctx *gin.Context, req *get_restaura
 			}
 		}
 	}
-	restaurants = &newRestaurantList
+	restaurants = newRestaurantList
 	return
 }

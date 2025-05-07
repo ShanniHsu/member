@@ -7,8 +7,8 @@ import (
 )
 
 type RestaurantRepository interface {
-	GetRestaurants() (restaurants *[]models.Restaurant, err error)
-	GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error)
+	GetRestaurants() (restaurants []models.Restaurant, err error)
+	GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants []models.Restaurant, err error)
 }
 
 type restaurantRepository struct {
@@ -21,12 +21,12 @@ func NewRestaurantRepository(db *gorm.DB) RestaurantRepository {
 	}
 }
 
-func (s restaurantRepository) GetRestaurants() (restaurants *[]models.Restaurant, err error) {
+func (s restaurantRepository) GetRestaurants() (restaurants []models.Restaurant, err error) {
 	err = s.DB.Model(&models.Restaurant{}).Find(&restaurants).Error
 	return
 }
 
-func (s restaurantRepository) GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants *[]models.Restaurant, err error) {
+func (s restaurantRepository) GetRestaurantFilter(parameter *get_restaurants.Request) (restaurants []models.Restaurant, err error) {
 	query := s.DB.Model(&models.Restaurant{})
 	if parameter.ID != 0 {
 		query = query.Where("id = ?", parameter.ID)
