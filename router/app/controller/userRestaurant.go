@@ -10,44 +10,39 @@ import (
 )
 
 func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
-	req := new(get_user_restaurants.Request)
+	var idInt, typeInt int64
+	var err error
 
 	idString := ctx.Query("id")
 	if idString != "" {
-		idInt, err := strconv.ParseInt(idString, 10, 64)
+		idInt, err = strconv.ParseInt(idString, 10, 64)
 		if err != nil {
 			ctx.JSON(http.StatusOK, gin.H{
 				"message": err.Error(),
 			})
 			return
 		}
-		req.ID = idInt
 	}
 
 	typeString := ctx.Query("type")
 	if typeString != "" {
-		typeInt, err := strconv.ParseInt(typeString, 10, 64)
+		typeInt, err = strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			return
 		}
-		req.Type = typeInt
 	}
 
 	name := ctx.Query("name")
-	if name != "" {
-		req.Name = name
-	}
 
 	address := ctx.Query("address")
-	if address != "" {
-		req.Address = address
-	}
 
 	page := ctx.Query("page")
-	if page != "" {
+	if page == "" {
+		page = "1"
+	} else {
 		_, err := strconv.Atoi(page)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -55,15 +50,12 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 			})
 			return
 		}
-		req.Page = page
-	}
-
-	if req.Page == "" {
-		req.Page = "1"
 	}
 
 	pageSize := ctx.Query("page_size")
-	if pageSize != "" {
+	if pageSize == "" {
+		pageSize = "100"
+	} else {
 		_, err := strconv.Atoi(pageSize)
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -71,11 +63,15 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 			})
 			return
 		}
-		req.PageSize = pageSize
 	}
 
-	if req.PageSize == "" {
-		req.PageSize = "100"
+	req := &get_user_restaurants.Request{
+		ID:       idInt,
+		Type:     typeInt,
+		Name:     name,
+		Address:  address,
+		Page:     page,
+		PageSize: pageSize,
 	}
 
 	data, err := c.userRestaurant.GetPocketRestaurantList(ctx, req)
@@ -85,6 +81,7 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 		})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get pocket restaurant list!",
 		"data":    data,

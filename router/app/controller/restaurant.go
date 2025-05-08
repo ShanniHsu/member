@@ -22,7 +22,6 @@ func (c appController) GetRestaurants(ctx *gin.Context) {
 }
 
 func (c appController) GetRestaurantList(ctx *gin.Context) {
-	req := new(get_restaurants.Request)
 	var idInt, typeInt int64
 	var err error
 
@@ -49,8 +48,10 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 		}
 	}
 
-	req.Type = typeInt
-	req.ID = idInt
+	req := &get_restaurants.Request{
+		ID:   idInt,
+		Type: typeInt,
+	}
 
 	resp, err := c.restaurantService.GetRestaurantList(ctx, req)
 	if err != nil {
