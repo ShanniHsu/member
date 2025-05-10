@@ -10,21 +10,25 @@ import (
 )
 
 func (c appController) Register(ctx *gin.Context) {
-	req := new(register.Request)
-	err := ctx.ShouldBindJSON(req)
+	value, exist := ctx.Get("validatedBody")
+	if !exist {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Validated data missing",
+		})
+		return
+	}
+
+	// context用什麼格式存就得使用什麼格式取出，否則會出現panic
+	req := value.(*register.Request)
+
+	err := c.userService.Register(req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
-	err = c.userService.Register(req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Register successfully!",
 	})
