@@ -9,7 +9,7 @@ import (
 func Binding[T any]() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var obj T
-		if err := ctx.ShouldBind(&obj); err != nil {
+		if err := ctx.ShouldBindJSON(&obj); err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 				"error":  "Invalid request body",
 				"detail": err.Error(),
