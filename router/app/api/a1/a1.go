@@ -2,6 +2,7 @@ package a1
 
 import (
 	"github.com/gin-gonic/gin"
+	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"member/router/app/controller"
 	"member/router/app/middleware"
@@ -21,7 +22,7 @@ func Init(router *gin.Engine) {
 		newUserRestaurantService,
 	)
 	router.POST("/register", middleware2.Binding[register.Request](), api.Register) // 註冊
-	router.POST("/login", api.Login)                                                // 登入
+	router.POST("/login", middleware2.Binding[login.Request](), api.Login)          // 登入
 
 	auth := router.Group("/auth")
 	auth.Use(middleware.Auth(newUserService))
