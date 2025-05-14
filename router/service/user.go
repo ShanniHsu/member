@@ -18,7 +18,7 @@ type User interface {
 	Register(req *register.Request) (err error)
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
-	GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error)
+	GetUserInfo(user *models.User) (resp *get_user.Response, err error)
 	Logout(ctx *gin.Context) (err error)
 }
 
@@ -110,13 +110,8 @@ func (s userService) AuthBearerToken(token string) (user *models.User, err error
 	return
 }
 
-func (s userService) GetUserInfo(ctx *gin.Context) (resp *get_user.Response, err error) {
-	var user = new(models.User)
-	ctxUser, exist := ctx.Get("user")
-	if exist {
-		user = ctxUser.(*models.User)
-	}
-
+func (s userService) GetUserInfo(user *models.User) (resp *get_user.Response, err error) {
+	
 	resp = &get_user.Response{
 		Account:  user.Account,
 		Nickname: user.Nickname,

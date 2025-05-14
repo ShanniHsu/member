@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
+	"member/models"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
 	"net/http"
@@ -58,7 +60,17 @@ func (c appController) Login(ctx *gin.Context) {
 }
 
 func (c appController) GetUserInfo(ctx *gin.Context) {
-	resp, err := c.userService.GetUserInfo(ctx)
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized!",
+		})
+		log.Print("User in context is missing")
+		return
+	}
+
+	user := userCtx.(*models.User)
+	resp, err := c.userService.GetUserInfo(user)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
