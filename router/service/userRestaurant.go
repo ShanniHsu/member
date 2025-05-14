@@ -73,16 +73,24 @@ func (s userRestaurantService) AddPocketRestaurant(ctx *gin.Context, req *create
 }
 
 func (s userRestaurantService) DeletePocketRestaurant(ctx *gin.Context, req *delete_user_restaurant.Request) (err error) {
-	var user = new(models.User)
 	userCtx, exist := ctx.Get("user")
-	if exist {
-		user = userCtx.(*models.User)
+	if !exist {
+		err = errors.New("user not exist")
+		return
 	}
-	userID := user.ID
 
-	checkList := new(get_user_restaurants.Request)
-	checkList.ID = req.ID
-	res, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, userID)
+	user := userCtx.(*models.User)
+
+	checkList := &get_user_restaurants.Request{
+		ID: req.ID,
+	}
+
+	res, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, user.ID)
+	if err != nil {
+		err = errors.New("Get UserRestaurant Failed!")
+		return
+	}
+
 	if res.TotalCount == 0 {
 		err = errors.New("ID isn't existed!")
 		return

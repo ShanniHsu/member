@@ -112,16 +112,16 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 }
 
 func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
-	req := new(delete_user_restaurant.Request)
-	err := ctx.ShouldBindJSON(req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+	value, exist := ctx.Get("validatedBody")
+	if !exist {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Validated data missing",
 		})
 		return
 	}
 
-	err = c.userRestaurant.DeletePocketRestaurant(ctx, req)
+	req := value.(*delete_user_restaurant.Request)
+	err := c.userRestaurant.DeletePocketRestaurant(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
