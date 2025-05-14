@@ -90,15 +90,15 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 }
 
 func (c appController) AddPocketRestaurant(ctx *gin.Context) {
-	req := new(create_user_restaurant.Request)
-	err := ctx.ShouldBindJSON(req)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+	value, exist := ctx.Get("validatedBody")
+	if !exist {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Validated data missing",
 		})
 		return
 	}
-	err = c.userRestaurant.AddPocketRestaurant(ctx, req)
+	req := value.(*create_user_restaurant.Request)
+	err := c.userRestaurant.AddPocketRestaurant(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

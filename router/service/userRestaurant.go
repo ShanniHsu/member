@@ -6,6 +6,7 @@ import (
 	"member/models"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
 	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
+	get_restaurants "member/router/app/content/get-restaurants"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
 	"member/router/repository"
 )
@@ -42,16 +43,27 @@ func (s userRestaurantService) GetPocketRestaurantList(ctx *gin.Context, req *ge
 }
 
 func (s userRestaurantService) AddPocketRestaurant(ctx *gin.Context, req *create_user_restaurant.Request) (err error) {
-	var user = new(models.User)
-	userCtx, exist := ctx.Get("user")
-	if exist {
-		user = userCtx.(*models.User)
+	// Restaurant isn't existed
+	parameter := &get_restaurants.Request{ID: req.RestaurantID}
+	_, err = s.repo.RestaurantRepository.GetRestaurantFilter(parameter)
+	if err != nil {
+		err = errors.New("Restaurant isn't existed!")
 	}
+
+	// User data in context isn't existed
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		err = errors.New("user not exist")
+		return
+	}
+
+	user := userCtx.(*models.User)
 
 	userRestaurant := &models.UserRestaurant{
 		UserID:       user.ID,
 		RestaurantID: req.RestaurantID,
 	}
+
 	err = s.repo.UserRestaurantRepository.Create(userRestaurant)
 	if err != nil {
 		err = errors.New("Create Failed!")
