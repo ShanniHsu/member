@@ -60,6 +60,7 @@ func (c appController) Login(ctx *gin.Context) {
 }
 
 func (c appController) GetUserInfo(ctx *gin.Context) {
+	
 	userCtx, exist := ctx.Get("user")
 	if !exist {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
@@ -85,7 +86,17 @@ func (c appController) GetUserInfo(ctx *gin.Context) {
 }
 
 func (c appController) Logout(ctx *gin.Context) {
-	err := c.userService.Logout(ctx)
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized!",
+		})
+		log.Println("User in context is missing")
+		return
+	}
+
+	user := userCtx.(*models.User)
+	err := c.userService.Logout(user)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),

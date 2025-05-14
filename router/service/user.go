@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"member/models"
 	"member/pkg/argon2"
@@ -19,7 +18,7 @@ type User interface {
 	Login(req *login.Request) (jwtToken string, err error)
 	AuthBearerToken(token string) (user *models.User, err error)
 	GetUserInfo(user *models.User) (resp *get_user.Response, err error)
-	Logout(ctx *gin.Context) (err error)
+	Logout(user *models.User) (err error)
 }
 
 type userService struct {
@@ -111,7 +110,7 @@ func (s userService) AuthBearerToken(token string) (user *models.User, err error
 }
 
 func (s userService) GetUserInfo(user *models.User) (resp *get_user.Response, err error) {
-	
+
 	resp = &get_user.Response{
 		Account:  user.Account,
 		Nickname: user.Nickname,
@@ -121,17 +120,14 @@ func (s userService) GetUserInfo(user *models.User) (resp *get_user.Response, er
 	return
 }
 
-func (s userService) Logout(ctx *gin.Context) (err error) {
-	var user = new(models.User)
-	ctxUser, exist := ctx.Get("user")
-	if exist {
-		user = ctxUser.(*models.User)
-	}
+func (s userService) Logout(user *models.User) (err error) {
+
 	newData := map[string]interface{}{
 		"token": "",
 	}
 	err = s.repo.UserRepository.Update(user, newData)
 	if err != nil {
+		err = errors.New("Update user failed!")
 		return
 	}
 	return
