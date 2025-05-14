@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"member/models"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
 	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
@@ -14,7 +13,7 @@ import (
 type UserRestaurant interface {
 	GetPocketRestaurantList(user *models.User, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error)
 	AddPocketRestaurant(user *models.User, req *create_user_restaurant.Request) (err error)
-	DeletePocketRestaurant(ctx *gin.Context, req *delete_user_restaurant.Request) (err error)
+	DeletePocketRestaurant(user *models.User, req *delete_user_restaurant.Request) (err error)
 }
 
 type userRestaurantService struct {
@@ -58,15 +57,7 @@ func (s userRestaurantService) AddPocketRestaurant(user *models.User, req *creat
 	return
 }
 
-func (s userRestaurantService) DeletePocketRestaurant(ctx *gin.Context, req *delete_user_restaurant.Request) (err error) {
-	userCtx, exist := ctx.Get("user")
-	if !exist {
-		err = errors.New("user not exist")
-		return
-	}
-
-	user := userCtx.(*models.User)
-
+func (s userRestaurantService) DeletePocketRestaurant(user *models.User, req *delete_user_restaurant.Request) (err error) {
 	checkList := &get_user_restaurants.Request{
 		ID: req.ID,
 	}
