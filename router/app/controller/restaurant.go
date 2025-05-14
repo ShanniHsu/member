@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
+	"member/models"
 	get_restaurants "member/router/app/content/get-restaurants"
 	"net/http"
 	"strconv"
@@ -24,6 +26,15 @@ func (c appController) GetRestaurants(ctx *gin.Context) {
 func (c appController) GetRestaurantList(ctx *gin.Context) {
 	var idInt, typeInt int64
 	var err error
+
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized!",
+		})
+		log.Print("User in context is missing")
+		return
+	}
 
 	idString := ctx.Query("id")
 	if idString != "" {
@@ -53,15 +64,18 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 		Type: typeInt,
 	}
 
-	resp, err := c.restaurantService.GetRestaurantList(ctx, req)
+	user := userCtx.(*models.User)
+	resp, err := c.restaurantService.GetRestaurantList(user, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Get restaurant list successfully!",
 		"data":    resp,
 	})
+	return
 }

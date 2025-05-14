@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 	"member/models"
@@ -13,7 +12,7 @@ import (
 
 type Restaurant interface {
 	GetRestaurants() (restaurants []models.Restaurant, err error)
-	GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants []models.Restaurant, err error)
+	GetRestaurantList(user *models.User, req *get_restaurants.Request) (restaurants []models.Restaurant, err error)
 }
 
 type restaurantService struct {
@@ -35,36 +34,32 @@ func (s restaurantService) GetRestaurants() (restaurants []models.Restaurant, er
 	return
 }
 
-func (s restaurantService) GetRestaurantList(ctx *gin.Context, req *get_restaurants.Request) (restaurants []models.Restaurant, err error) {
+func (s restaurantService) GetRestaurantList(user *models.User, req *get_restaurants.Request) (restaurants []models.Restaurant, err error) {
 	restaurantAll, err := s.repo.RestaurantRepository.GetRestaurantFilter(req)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = errors.New("Restaurants isn't found!")
 		return
 	}
 
-	var user = new(models.User)
-	ctxUser, exist := ctx.Get("user")
-	if exist {
-		user = ctxUser.(*models.User)
+	parameter := &get_user_restaurants.Request{
+		Type:     req.Type,
+		Page:     "1",
+		PageSize: "500",
 	}
 
-	var parameter = new(get_user_restaurants.Request)
-	newRestaurantList := restaurantAll
-	parameter.Type = req.Type
-	parameter.Page = "1"
-	parameter.PageSize = "500"
 	userRestaurant, _ := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(parameter, user.ID)
 
 	if userRestaurant.TotalCount > 0 {
 		for i := 0; i < len(userRestaurant.List); i++ {
-			for key, value := range newRestaurantList {
+			for key, value := range restaurantAll {
 				if value.ID == userRestaurant.List[i].RestaurantID {
-					newRestaurantList = slices.Delete(newRestaurantList, key, key+1)
+					// 後續要優化，盡可能避免使用slice.Delete這類昂貴操作
+					restaurantAll = slices.Delete(restaurantAll, key, key+1)
 					break
 				}
 			}
 		}
 	}
-	restaurants = newRestaurantList
+	restaurants = restaurantAll
 	return
 }
