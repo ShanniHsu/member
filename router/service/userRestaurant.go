@@ -12,7 +12,7 @@ import (
 )
 
 type UserRestaurant interface {
-	GetPocketRestaurantList(ctx *gin.Context, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error)
+	GetPocketRestaurantList(user *models.User, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error)
 	AddPocketRestaurant(ctx *gin.Context, req *create_user_restaurant.Request) (err error)
 	DeletePocketRestaurant(ctx *gin.Context, req *delete_user_restaurant.Request) (err error)
 }
@@ -27,16 +27,10 @@ func NewUserRestaurantService(repo repository.Repo) UserRestaurant {
 	}
 }
 
-func (s userRestaurantService) GetPocketRestaurantList(ctx *gin.Context, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error) {
-	var user = new(models.User)
-
-	userCtx, exist := ctx.Get("user")
-	if exist {
-		user = userCtx.(*models.User)
-	}
-	userID := user.ID
-	resp, err = s.repo.UserRestaurantRepository.GetUserRestaurantFilter(req, userID)
+func (s userRestaurantService) GetPocketRestaurantList(user *models.User, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error) {
+	resp, err = s.repo.UserRestaurantRepository.GetUserRestaurantFilter(req, user.ID)
 	if err != nil {
+		err = errors.New("Get UserRestaurant Failed!")
 		return
 	}
 	return

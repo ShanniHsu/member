@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
+	"member/models"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
 	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
@@ -10,6 +12,15 @@ import (
 )
 
 func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized!",
+		})
+		log.Print("User in context is missing")
+		return
+	}
+
 	var idInt, typeInt int64
 	var err error
 
@@ -74,7 +85,8 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 		PageSize: pageSize,
 	}
 
-	data, err := c.userRestaurant.GetPocketRestaurantList(ctx, req)
+	user := userCtx.(*models.User)
+	data, err := c.userRestaurant.GetPocketRestaurantList(user, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
