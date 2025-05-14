@@ -13,7 +13,7 @@ import (
 
 type UserRestaurant interface {
 	GetPocketRestaurantList(user *models.User, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error)
-	AddPocketRestaurant(ctx *gin.Context, req *create_user_restaurant.Request) (err error)
+	AddPocketRestaurant(user *models.User, req *create_user_restaurant.Request) (err error)
 	DeletePocketRestaurant(ctx *gin.Context, req *delete_user_restaurant.Request) (err error)
 }
 
@@ -36,22 +36,14 @@ func (s userRestaurantService) GetPocketRestaurantList(user *models.User, req *g
 	return
 }
 
-func (s userRestaurantService) AddPocketRestaurant(ctx *gin.Context, req *create_user_restaurant.Request) (err error) {
-	// Restaurant isn't existed
-	parameter := &get_restaurants.Request{ID: req.RestaurantID}
+func (s userRestaurantService) AddPocketRestaurant(user *models.User, req *create_user_restaurant.Request) (err error) {
+	parameter := &get_restaurants.Request{
+		ID: req.RestaurantID,
+	}
 	_, err = s.repo.RestaurantRepository.GetRestaurantFilter(parameter)
 	if err != nil {
 		err = errors.New("Restaurant isn't existed!")
 	}
-
-	// User data in context isn't existed
-	userCtx, exist := ctx.Get("user")
-	if !exist {
-		err = errors.New("user not exist")
-		return
-	}
-
-	user := userCtx.(*models.User)
 
 	userRestaurant := &models.UserRestaurant{
 		UserID:       user.ID,

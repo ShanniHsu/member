@@ -102,6 +102,15 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 }
 
 func (c appController) AddPocketRestaurant(ctx *gin.Context) {
+	userCtx, exist := ctx.Get("user")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized!",
+		})
+		log.Println("User in context is missing")
+		return
+	}
+
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -109,8 +118,9 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 		})
 		return
 	}
+	user := userCtx.(*models.User)
 	req := value.(*create_user_restaurant.Request)
-	err := c.userRestaurant.AddPocketRestaurant(ctx, req)
+	err := c.userRestaurant.AddPocketRestaurant(user, req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
