@@ -21,3 +21,8 @@ func (r Response) ResponseBadRequest(ctx *gin.Context) {
 	ctx.JSON(http.StatusBadRequest, r)
 	return
 }
+
+func (r Response) ResponseUnauthorized(ctx *gin.Context) {
+	ctx.JSON(http.StatusUnauthorized, r)
+	return
+}
