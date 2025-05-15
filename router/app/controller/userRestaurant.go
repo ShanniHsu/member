@@ -4,19 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"member/models"
+	"member/pkg/message"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
 	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
-	"net/http"
 	"strconv"
 )
 
 func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
 		log.Print("User in context is missing")
 		return
 	}
@@ -28,9 +28,8 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if idString != "" {
 		idInt, err = strconv.ParseInt(idString, 10, 64)
 		if err != nil {
-			ctx.JSON(http.StatusOK, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -39,9 +38,8 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if typeString != "" {
 		typeInt, err = strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -54,11 +52,10 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if page == "" {
 		page = "1"
 	} else {
-		_, err := strconv.Atoi(page)
+		_, err = strconv.Atoi(page)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -67,11 +64,10 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if pageSize == "" {
 		pageSize = "100"
 	} else {
-		_, err := strconv.Atoi(pageSize)
+		_, err = strconv.Atoi(pageSize)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -88,34 +84,31 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	data, err := c.userRestaurant.GetPocketRestaurantList(user, req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get pocket restaurant list!",
-		"data":    data,
-	})
+	resp.Msg = "Get pocket restaurant list!"
+	resp.Data = data
+	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) AddPocketRestaurant(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
 	}
 
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Validated data missing",
-		})
+		resp.Msg = "Validated data missing"
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
@@ -123,33 +116,30 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 	req := value.(*create_user_restaurant.Request)
 	err := c.userRestaurant.AddPocketRestaurant(user, req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Add pocket restaurant successfully!",
-	})
+	resp.Msg = "Add pocket restaurant successfully!"
+	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
 	}
 
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Validated data missing",
-		})
+		resp.Msg = "Validated data missing"
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
@@ -157,14 +147,12 @@ func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
 	req := value.(*delete_user_restaurant.Request)
 	err := c.userRestaurant.DeletePocketRestaurant(user, req)
 	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Delete pocket restaurant successfully!",
-	})
+	resp.Msg = "Delete pocket restaurant successfully!"
+	resp.ResponseSuccess(ctx)
 	return
 }

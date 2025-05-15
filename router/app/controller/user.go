@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"member/models"
+	"member/pkg/message"
 	"member/router/app/content/login"
 	"member/router/app/content/register"
-	"net/http"
 )
 
 func (c appController) Register(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Validated data missing",
-		})
+		resp.Msg = "Validated data missing"
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
@@ -23,74 +23,67 @@ func (c appController) Register(ctx *gin.Context) {
 
 	err := c.userService.Register(req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Register successfully!",
-	})
+	resp.Msg = "Register successfully!"
+	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) Login(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Validated data missing",
-		})
+		resp.Msg = "Validated data missing"
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
 	req := value.(*login.Request)
 	jwtToken, err := c.userService.Login(req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message":  "Login successfully!",
-		"jwtToken": jwtToken,
-	})
+
+	resp.Msg = "Login successfully!"
+	resp.Data = jwtToken
+	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) GetUserInfo(ctx *gin.Context) {
-	
+	resp := message.Response{Msg: "System error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
-		log.Print("User in context is missing")
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
+		log.Println("User in context is missing")
 		return
 	}
 
 	user := userCtx.(*models.User)
-	resp, err := c.userService.GetUserInfo(user)
+	data, err := c.userService.GetUserInfo(user)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get Successfully",
-		"data":    resp,
-	})
+	resp.Msg = "Get user info successfully!"
+	resp.Data = data
 	return
 }
 
 func (c appController) Logout(ctx *gin.Context) {
+	resp := message.Response{Msg: "System error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
 	}
@@ -98,13 +91,11 @@ func (c appController) Logout(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	err := c.userService.Logout(user)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Logout Successfully",
-	})
+	resp.Msg = "Logout successfully!"
+	resp.ResponseSuccess(ctx)
 	return
 }

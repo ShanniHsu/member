@@ -4,35 +4,36 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"member/models"
+	"member/pkg/message"
 	get_restaurants "member/router/app/content/get-restaurants"
-	"net/http"
 	"strconv"
 )
 
 func (c appController) GetRestaurants(ctx *gin.Context) {
-	resp, err := c.restaurantService.GetRestaurants()
+	resp := message.Response{Msg: "System Error"}
+	data, err := c.restaurantService.GetRestaurants()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get restaurants successfully!",
-		"data":    resp,
-	})
+
+	resp.Msg = "Get restaurants successfully!"
+	resp.Data = data
+	resp.ResponseSuccess(ctx)
+	return
 }
 
 func (c appController) GetRestaurantList(ctx *gin.Context) {
 	var idInt, typeInt int64
 	var err error
 
+	resp := message.Response{Msg: "System Error"}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized!",
-		})
-		log.Print("User in context is missing")
+		resp.Msg = "Unauthorized!"
+		resp.ResponseUnauthorized(ctx)
+		log.Println("User in context is missing")
 		return
 	}
 
@@ -40,9 +41,8 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	if idString != "" {
 		idInt, err = strconv.ParseInt(idString, 10, 64)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -52,9 +52,8 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	if typeString != "" {
 		typeInt, err = strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{
-				"message": err.Error(),
-			})
+			resp.Msg = err.Error()
+			resp.ResponseBadRequest(ctx)
 			return
 		}
 	}
@@ -65,17 +64,15 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	}
 
 	user := userCtx.(*models.User)
-	resp, err := c.restaurantService.GetRestaurantList(user, req)
+	data, err := c.restaurantService.GetRestaurantList(user, req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
+		resp.Msg = err.Error()
+		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get restaurant list successfully!",
-		"data":    resp,
-	})
+	resp.Msg = "Get restaurant list successfully!"
+	resp.Data = data
+	resp.ResponseSuccess(ctx)
 	return
 }
