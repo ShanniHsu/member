@@ -14,6 +14,7 @@ func Binding[T any]() gin.HandlerFunc {
 		if err := ctx.ShouldBindJSON(&obj); err != nil {
 			resp.Msg = "Invalid request body"
 			resp.ResponseBadRequest(ctx)
+			log.Println("Invalid request body")
 			ctx.Abort()
 			return
 		}
