@@ -14,19 +14,20 @@ import (
 var bundle *i18n.Bundle
 
 func init() {
-	//中央翻譯庫，用來儲存所有語系的翻譯檔
-	//在這裏設定預設語言
+	// 中央翻譯庫，用來儲存所有語系的翻譯檔
+	// 在這裏設定預設語言
 	bundle = i18n.NewBundle(language.English)
-	//註冊翻譯檔解析器
+	// 註冊翻譯檔解析器
 	bundle.RegisterUnmarshalFunc("json", json.Unmarshal)
+	// 系統支援的語言
+	supportLangs := []string{"en", "zh"}
 
-	lang := "en"
-	path := fmt.Sprintf("./pkg/message/locales/%s.json", lang)
-	_, err := bundle.LoadMessageFile(path)
-	if err != nil {
-		panic(err)
-		return
+	for _, lang := range supportLangs {
+		path := fmt.Sprintf("./pkg/message/locales/%s.json", lang)
+		// 必要載入翻譯檔，如果有錯誤直接讓系統崩潰
+		bundle.MustLoadMessageFile(path)
 	}
+	fmt.Println("Init i18n successfully")
 }
 
 func GetMsg(msgID string, lang string) (message string) {
