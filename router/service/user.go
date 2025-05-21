@@ -6,6 +6,7 @@ import (
 	"member/models"
 	"member/pkg/argon2"
 	"member/pkg/jwt"
+	"member/pkg/message"
 	"member/pkg/uuid"
 	"member/router/app/content/get-user"
 	"member/router/app/content/login"
@@ -34,8 +35,13 @@ func NewUserService(repo repository.Repo) User {
 func (s userService) Register(req *register.Request) (err error) {
 
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		err = errors.New(message.GETDATAFAILED)
+		return
+	}
+
 	if resp.ID != 0 {
-		err = errors.New("The account is existed!")
+		err = errors.New(message.ACCOUNT_EXISTED)
 		return
 	}
 
@@ -46,7 +52,8 @@ func (s userService) Register(req *register.Request) (err error) {
 			var password string
 			password, err = argon2.GenerateFromPassword(req.Password)
 			if err != nil {
-				err = errors.New("The password generate failed!")
+				// The password generate failed!
+				err = errors.New(message.REGISTER_FAILED)
 				return
 			}
 
@@ -58,7 +65,9 @@ func (s userService) Register(req *register.Request) (err error) {
 			}
 			err = s.repo.UserRepository.Create(user)
 			if err != nil {
-				return err
+				// User create failed!
+				err = errors.New(message.REGISTER_FAILED)
+				return
 			}
 		}
 	}

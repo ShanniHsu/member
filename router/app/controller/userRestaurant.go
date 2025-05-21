@@ -12,10 +12,10 @@ import (
 )
 
 func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Print("User in context is missing")
 		return
@@ -96,10 +96,10 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 }
 
 func (c appController) AddPocketRestaurant(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
@@ -127,10 +127,10 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 }
 
 func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return

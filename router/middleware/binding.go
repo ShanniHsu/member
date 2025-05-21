@@ -9,7 +9,7 @@ import (
 
 func Binding[T any]() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp := message.Response{Msg: "System error"}
+		resp := message.Response{MsgID: message.SYSTEM_ERROR}
 		var obj T
 		if err := ctx.ShouldBindJSON(&obj); err != nil {
 			resp.Msg = "Invalid request body"

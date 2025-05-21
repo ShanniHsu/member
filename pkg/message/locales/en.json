@@ -1,4 +1,9 @@
 {
-  "TEST": "TEST ENGLISH",
-  "LOGIN_SUCCESSFULLY": "Login successfully!"
+  "A103001": "Unauthorized!",
+  "D101001": "Get data failed!",
+  "S109001": "System error!",
+  "U100001": "Register successfully!",
+  "U100002": "Login successfully!",
+  "U101001": "The account is existed!",
+  "U109001": "Register failed!"
 }

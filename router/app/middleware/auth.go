@@ -11,13 +11,13 @@ import (
 // 路由請求中間件，前端必須把token放到請求頭上，對服務器進行驗證token成功後，才能訪問後續的請求路由
 func Auth(userService service.User) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		resp := message.Response{Msg: "System error"}
+		resp := message.Response{MsgID: message.SYSTEM_ERROR}
 		// 獲取authorization header: 獲取前端傳過來的訊息
 		tokenString := ctx.GetHeader("Authorization")
 
 		// 驗證前端傳過來的token格式，須不為空，且開頭為Bearer
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
-			resp.Msg = "Unauthorized!"
+			resp.MsgID = message.UNAUTHORIZED
 			resp.ResponseUnauthorized(ctx)
 			ctx.Abort()
 			return

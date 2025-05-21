@@ -10,7 +10,7 @@ import (
 )
 
 func (c appController) Register(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
 		resp.Msg = "Validated data missing"
@@ -23,18 +23,18 @@ func (c appController) Register(ctx *gin.Context) {
 
 	err := c.userService.Register(req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Register successfully!"
+	resp.MsgID = message.REGISTER_SUCCESSFULLY
 	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) Login(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
 		resp.Msg = "Validated data missing"
@@ -50,17 +50,17 @@ func (c appController) Login(ctx *gin.Context) {
 		return
 	}
 
-	resp.MsgID = "LOGIN_SUCCESSFULLY"
+	resp.MsgID = message.LOGIN_SUCCESSFULLY
 	resp.Data = jwtToken
 	resp.ResponseSuccess(ctx)
 	return
 }
 
 func (c appController) GetUserInfo(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
@@ -79,10 +79,10 @@ func (c appController) GetUserInfo(ctx *gin.Context) {
 }
 
 func (c appController) Logout(ctx *gin.Context) {
-	resp := message.Response{Msg: "System error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return

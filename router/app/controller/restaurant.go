@@ -10,7 +10,7 @@ import (
 )
 
 func (c appController) GetRestaurants(ctx *gin.Context) {
-	resp := message.Response{Msg: "System Error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	data, err := c.restaurantService.GetRestaurants()
 	if err != nil {
 		resp.Msg = err.Error()
@@ -28,10 +28,10 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	var idInt, typeInt int64
 	var err error
 
-	resp := message.Response{Msg: "System Error"}
+	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	userCtx, exist := ctx.Get("user")
 	if !exist {
-		resp.Msg = "Unauthorized!"
+		resp.MsgID = message.UNAUTHORIZED
 		resp.ResponseUnauthorized(ctx)
 		log.Println("User in context is missing")
 		return
