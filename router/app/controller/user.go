@@ -45,7 +45,7 @@ func (c appController) Login(ctx *gin.Context) {
 	req := value.(*login.Request)
 	jwtToken, err := c.userService.Login(req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}

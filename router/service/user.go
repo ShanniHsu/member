@@ -36,7 +36,7 @@ func (s userService) Register(req *register.Request) (err error) {
 
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		err = errors.New(message.GETDATAFAILED)
+		err = errors.New(message.GET_DATA_FAILED)
 		return
 	}
 
@@ -77,15 +77,18 @@ func (s userService) Register(req *register.Request) (err error) {
 func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 	resp, err := s.repo.UserRepository.GetUserByAccount(req.Account)
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		err = errors.New("Authentication failed!")
+		// The account isn't existed
+		err = errors.New(message.LOGIN_FAILED)
 		return
 	}
 	match, err := argon2.ComparePasswordAndHash(req.Password, resp.Password)
 	if err != nil {
+		// Compare password has problem
+		err = errors.New(message.LOGIN_FAILED)
 		return
 	}
 	if !match {
-		err = errors.New("Authentication failed!")
+		err = errors.New(message.LOGIN_FAILED)
 		return
 	}
 
@@ -98,12 +101,14 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 
 	err = s.repo.UserRepository.Update(resp, newData)
 	if err != nil {
-		err = errors.New("Update user failed!")
+		err = errors.New(message.UPDATE_DATA_FAILED)
 		return
 	}
 
 	jwtToken, err = jwt.GenerateJWT(token)
 	if err != nil {
+		// jwtToken has problem
+		err = errors.New(message.LOGIN_FAILED)
 		return
 	}
 	return

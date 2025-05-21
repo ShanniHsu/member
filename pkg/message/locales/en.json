@@ -1,9 +1,11 @@
 {
   "A103001": "Unauthorized!",
   "D101001": "Get data failed!",
+  "D101002": "Update data failed!",
   "S109001": "System error!",
   "U100001": "Register successfully!",
   "U100002": "Login successfully!",
   "U101001": "The account is existed!",
-  "U109001": "Register failed!"
+  "U109001": "Register failed!",
+  "U109002": "Login failed!"
 }
