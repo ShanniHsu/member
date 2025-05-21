@@ -21,7 +21,7 @@ func Init() {
 func newRouter() *gin.Engine {
 	router := gin.New()
 	// 註冊上面自定義的日誌中間件
-	middleware.AddGinMiddleware(router, "requestId", "cors", "logger")
+	middleware.AddGinMiddleware(router, "requestId", "cors", "logger", "locale")
 	router.GET("/test", func(c *gin.Context) {
 		// 查詢我們之前在日誌中間件，注入的鍵值數
 		example := c.MustGet("example").(string)
