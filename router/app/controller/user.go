@@ -50,7 +50,7 @@ func (c appController) Login(ctx *gin.Context) {
 		return
 	}
 
-	resp.Msg = "Login successfully!"
+	resp.MsgID = "LOGIN_SUCCESSFULLY"
 	resp.Data = jwtToken
 	resp.ResponseSuccess(ctx)
 	return
