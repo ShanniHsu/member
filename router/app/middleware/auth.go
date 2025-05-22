@@ -27,7 +27,7 @@ func Auth(userService service.User) gin.HandlerFunc {
 		token := tokenString[7:]
 		claims, err := jwt.ParseToken(token)
 		if err != nil {
-			resp.Msg = "Token is invalid or expired!"
+			resp.MsgID = message.INVALID_OR_EXPIRED_LOGIN
 			resp.ResponseUnauthorized(ctx)
 			ctx.Abort()
 			return
@@ -35,7 +35,7 @@ func Auth(userService service.User) gin.HandlerFunc {
 
 		user, err := userService.AuthBearerToken(claims.Token)
 		if err != nil {
-			resp.Msg = "Token is invalid or expired!"
+			resp.MsgID = message.INVALID_OR_EXPIRED_LOGIN
 			resp.ResponseUnauthorized(ctx)
 			ctx.Abort()
 			return

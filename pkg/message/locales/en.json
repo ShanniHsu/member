@@ -1,5 +1,6 @@
 {
   "A103001": "Unauthorized!",
+  "A103002": "Invalid or expired login!",
   "D101001": "Get data failed!",
   "D101002": "Update data failed!",
   "D101003": "Create data failed!",
@@ -10,6 +11,9 @@
   "R100004": "Delete pocket restaurant successfully!",
   "R100005": "Pocket restaurant is zero!",
   "S102001": "Field format error!",
+  "S102002": "Invalid request body!",
+  "S102003": "Non-validation error!",
+  "S102004": "Validated data missing!",
   "S109001": "System error!",
   "U100001": "Register successfully!",
   "U100002": "Login successfully!",

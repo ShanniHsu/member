@@ -12,7 +12,7 @@ func Binding[T any]() gin.HandlerFunc {
 		resp := message.Response{MsgID: message.SYSTEM_ERROR}
 		var obj T
 		if err := ctx.ShouldBindJSON(&obj); err != nil {
-			resp.Msg = "Invalid request body"
+			resp.MsgID = message.INVALID_REQUEST_BODY
 			resp.ResponseBadRequest(ctx)
 			log.Println("Invalid request body")
 			ctx.Abort()
@@ -20,10 +20,11 @@ func Binding[T any]() gin.HandlerFunc {
 		}
 
 		msg := "Please check your input"
+		// 是否符合設定的tag條件
 		if err := validator.New().Struct(obj); err != nil {
 			// 如果錯誤不是validator回傳的
 			if _, ok := err.(validator.ValidationErrors); !ok {
-				resp.Msg = "Validation failed"
+				resp.MsgID = message.NON_VALIDATION_ERROR
 				resp.ResponseBadRequest(ctx)
 				log.Println("error:", err.Error())
 				ctx.Abort()

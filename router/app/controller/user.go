@@ -13,7 +13,7 @@ func (c appController) Register(ctx *gin.Context) {
 	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		resp.Msg = "Validated data missing"
+		resp.MsgID = message.VALIDATED_DATA_MISSING
 		resp.ResponseBadRequest(ctx)
 		return
 	}
@@ -37,7 +37,7 @@ func (c appController) Login(ctx *gin.Context) {
 	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		resp.Msg = "Validated data missing"
+		resp.MsgID = message.VALIDATED_DATA_MISSING
 		resp.ResponseBadRequest(ctx)
 		return
 	}

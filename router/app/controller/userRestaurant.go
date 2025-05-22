@@ -107,7 +107,7 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		resp.Msg = "Validated data missing"
+		resp.MsgID = message.VALIDATED_DATA_MISSING
 		resp.ResponseBadRequest(ctx)
 		return
 	}
@@ -138,7 +138,7 @@ func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
 
 	value, exist := ctx.Get("validatedBody")
 	if !exist {
-		resp.Msg = "Validated data missing"
+		resp.MsgID = message.VALIDATED_DATA_MISSING
 		resp.ResponseBadRequest(ctx)
 		return
 	}
