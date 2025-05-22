@@ -13,12 +13,12 @@ func (c appController) GetRestaurants(ctx *gin.Context) {
 	resp := message.Response{MsgID: message.SYSTEM_ERROR}
 	data, err := c.restaurantService.GetRestaurants()
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Get restaurants successfully!"
+	resp.MsgID = message.GET_RESTAURANT_LIST_SUCCESSFULLY
 	resp.Data = data
 	resp.ResponseSuccess(ctx)
 	return
@@ -41,7 +41,7 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	if idString != "" {
 		idInt, err = strconv.ParseInt(idString, 10, 64)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -52,7 +52,7 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	if typeString != "" {
 		typeInt, err = strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -66,12 +66,12 @@ func (c appController) GetRestaurantList(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	data, err := c.restaurantService.GetRestaurantList(user, req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Get restaurant list successfully!"
+	resp.MsgID = message.GET_RESTAURANT_LIST_SUCCESSFULLY
 	resp.Data = data
 	resp.ResponseSuccess(ctx)
 	return

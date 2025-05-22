@@ -117,7 +117,7 @@ func (s userService) Login(req *login.Request) (jwtToken string, err error) {
 func (s userService) AuthBearerToken(token string) (user *models.User, err error) {
 	user, err = s.repo.UserRepository.GetUserByToken(token)
 	if err != nil {
-		err = errors.New("Token isn't found!")
+		err = errors.New(message.TOKEN_NOT_FOUND)
 		return
 	}
 	return
@@ -141,7 +141,7 @@ func (s userService) Logout(user *models.User) (err error) {
 	}
 	err = s.repo.UserRepository.Update(user, newData)
 	if err != nil {
-		err = errors.New("Update user failed!")
+		err = errors.New(message.UPDATE_DATA_FAILED)
 		return
 	}
 	return

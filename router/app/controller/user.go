@@ -69,11 +69,11 @@ func (c appController) GetUserInfo(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	data, err := c.userService.GetUserInfo(user)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
-	resp.Msg = "Get user info successfully!"
+	resp.MsgID = message.GET_USER_INFO_SUCCESSFULLY
 	resp.Data = data
 	return
 }
@@ -91,11 +91,11 @@ func (c appController) Logout(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	err := c.userService.Logout(user)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
-	resp.Msg = "Logout successfully!"
+	resp.MsgID = message.LOGOUT_SUCCESSFULLY
 	resp.ResponseSuccess(ctx)
 	return
 }

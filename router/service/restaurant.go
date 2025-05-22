@@ -5,6 +5,7 @@ import (
 	"golang.org/x/exp/slices"
 	"gorm.io/gorm"
 	"member/models"
+	"member/pkg/message"
 	get_restaurants "member/router/app/content/get-restaurants"
 	get_user_restaurants "member/router/app/content/get-user-restaurants"
 	"member/router/repository"
@@ -28,7 +29,7 @@ func NewRestaurantService(repo repository.Repo) Restaurant {
 func (s restaurantService) GetRestaurants() (restaurants []models.Restaurant, err error) {
 	restaurants, err = s.repo.RestaurantRepository.GetRestaurants()
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		err = errors.New("Restaurants isn't found!")
+		err = errors.New(message.GET_DATA_FAILED)
 		return
 	}
 	return
@@ -37,7 +38,7 @@ func (s restaurantService) GetRestaurants() (restaurants []models.Restaurant, er
 func (s restaurantService) GetRestaurantList(user *models.User, req *get_restaurants.Request) (restaurants []models.Restaurant, err error) {
 	restaurantAll, err := s.repo.RestaurantRepository.GetRestaurantFilter(req)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		err = errors.New("Restaurants isn't found!")
+		err = errors.New(message.GET_DATA_FAILED)
 		return
 	}
 

@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"member/models"
+	"member/pkg/message"
 	create_user_restaurant "member/router/app/content/create-user-restaurant"
 	delete_user_restaurant "member/router/app/content/delete-user-restaurant"
 	get_restaurants "member/router/app/content/get-restaurants"
@@ -29,7 +30,7 @@ func NewUserRestaurantService(repo repository.Repo) UserRestaurant {
 func (s userRestaurantService) GetPocketRestaurantList(user *models.User, req *get_user_restaurants.Request) (resp *get_user_restaurants.Response, err error) {
 	resp, err = s.repo.UserRestaurantRepository.GetUserRestaurantFilter(req, user.ID)
 	if err != nil {
-		err = errors.New("Get UserRestaurant Failed!")
+		err = errors.New(message.GET_DATA_FAILED)
 		return
 	}
 	return
@@ -41,7 +42,8 @@ func (s userRestaurantService) AddPocketRestaurant(user *models.User, req *creat
 	}
 	_, err = s.repo.RestaurantRepository.GetRestaurantFilter(parameter)
 	if err != nil {
-		err = errors.New("Restaurant isn't existed!")
+		err = errors.New(message.GET_DATA_FAILED)
+		return
 	}
 
 	userRestaurant := &models.UserRestaurant{
@@ -51,7 +53,7 @@ func (s userRestaurantService) AddPocketRestaurant(user *models.User, req *creat
 
 	err = s.repo.UserRestaurantRepository.Create(userRestaurant)
 	if err != nil {
-		err = errors.New("Create Failed!")
+		err = errors.New(message.CREATE_DATA_FAILED)
 		return
 	}
 	return
@@ -64,18 +66,18 @@ func (s userRestaurantService) DeletePocketRestaurant(user *models.User, req *de
 
 	res, err := s.repo.UserRestaurantRepository.GetUserRestaurantFilter(checkList, user.ID)
 	if err != nil {
-		err = errors.New("Get UserRestaurant Failed!")
+		err = errors.New(message.GET_DATA_FAILED)
 		return
 	}
 
 	if res.TotalCount == 0 {
-		err = errors.New("ID isn't existed!")
+		err = errors.New(message.POCKET_RESTAURANT_IS_ZERO)
 		return
 	}
 
 	err = s.repo.UserRestaurantRepository.DeleteByID(req.ID)
 	if err != nil {
-		err = errors.New("Delete Failed!")
+		err = errors.New(message.DELETE_DATA_FAILED)
 		return
 	}
 	return

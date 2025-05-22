@@ -28,7 +28,7 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if idString != "" {
 		idInt, err = strconv.ParseInt(idString, 10, 64)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -38,7 +38,7 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	if typeString != "" {
 		typeInt, err = strconv.ParseInt(typeString, 10, 64)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -54,7 +54,7 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	} else {
 		_, err = strconv.Atoi(page)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -66,7 +66,7 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	} else {
 		_, err = strconv.Atoi(pageSize)
 		if err != nil {
-			resp.Msg = err.Error()
+			resp.MsgID = message.FIELD_FORMAT_ERROR
 			resp.ResponseBadRequest(ctx)
 			return
 		}
@@ -84,12 +84,12 @@ func (c appController) GetPocketRestaurantList(ctx *gin.Context) {
 	user := userCtx.(*models.User)
 	data, err := c.userRestaurant.GetPocketRestaurantList(user, req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Get pocket restaurant list!"
+	resp.MsgID = message.GET_POCKET_RESTAURANT_LIST_SUCCESSFULLY
 	resp.Data = data
 	resp.ResponseSuccess(ctx)
 	return
@@ -116,12 +116,12 @@ func (c appController) AddPocketRestaurant(ctx *gin.Context) {
 	req := value.(*create_user_restaurant.Request)
 	err := c.userRestaurant.AddPocketRestaurant(user, req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Add pocket restaurant successfully!"
+	resp.MsgID = message.ADD_POCKET_RESTAURANT_SUCESSFULLY
 	resp.ResponseSuccess(ctx)
 	return
 }
@@ -147,12 +147,12 @@ func (c appController) DeletePocketRestaurant(ctx *gin.Context) {
 	req := value.(*delete_user_restaurant.Request)
 	err := c.userRestaurant.DeletePocketRestaurant(user, req)
 	if err != nil {
-		resp.Msg = err.Error()
+		resp.MsgID = err.Error()
 		resp.ResponseBadRequest(ctx)
 		return
 	}
 
-	resp.Msg = "Delete pocket restaurant successfully!"
+	resp.MsgID = message.DELETE_POCKET_RESTAURANT_SUCCESSFULLY
 	resp.ResponseSuccess(ctx)
 	return
 }
