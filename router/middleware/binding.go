@@ -19,7 +19,6 @@ func Binding[T any]() gin.HandlerFunc {
 			return
 		}
 
-		msg := "Please check your input"
 		// 是否符合設定的tag條件
 		if err := validator.New().Struct(obj); err != nil {
 			// 如果錯誤不是validator回傳的
@@ -32,19 +31,25 @@ func Binding[T any]() gin.HandlerFunc {
 			}
 
 			validatorErr := err.(validator.ValidationErrors)[0]
-			switch validatorErr.Tag() {
-			case "required":
-				msg = validatorErr.Field() + " is required"
-			case "max":
-				msg = validatorErr.Field() + " is too long"
-			case "min":
-				msg = validatorErr.Field() + " is too short"
-			case "email":
-				msg = validatorErr.Field() + " is invalid format"
+
+			field := map[string]interface{}{
+				"field": validatorErr.Field(),
 			}
 
-			resp.Msg = msg
-			resp.ResponseBadRequest(ctx)
+			switch validatorErr.Tag() {
+			case "required":
+				resp.MsgID = message.FIELD_IS_REQUIRED
+			case "max":
+				resp.MsgID = message.FIELD_IS_TOO_LONG
+			case "min":
+				resp.MsgID = message.FIELD_IS_TOO_SHORT
+			case "email":
+				resp.MsgID = message.FIELD_IS_INVALID_EMAIL_FORMAT
+			default:
+				resp.MsgID = message.FIELD_CHECK_INPUT_PLEASE
+			}
+
+			resp.ResponseBadRequest(ctx, field)
 			log.Println("error:", validatorErr.Error())
 			ctx.Abort()
 			return
