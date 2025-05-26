@@ -30,11 +30,19 @@ func init() {
 	fmt.Println("Init i18n successfully")
 }
 
-func GetMsg(msgID string, lang string) (message string) {
+func GetMsg(msgID string, lang string, otherData map[string]interface{}) (message string) {
 	localizer := i18n.NewLocalizer(bundle, lang)
-	message, err := localizer.Localize(&i18n.LocalizeConfig{
+
+	config := i18n.LocalizeConfig{
 		MessageID: msgID,
-	})
+	}
+	if otherData != nil {
+		config.TemplateData = otherData
+	}
+	message, err := localizer.Localize(
+		&config,
+	)
+
 	if err != nil {
 		panic(err)
 		return

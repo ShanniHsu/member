@@ -13,26 +13,50 @@ type Response struct {
 	Data  interface{} `json:"data,omitempty"`
 }
 
-func (r Response) ResponseSuccess(ctx *gin.Context) {
+func (r Response) ResponseSuccess(ctx *gin.Context, args ...map[string]interface{}) {
 	locale, _ := ctx.Get("locale")
 	lang := locale.(string)
-	r.Msg = GetMsg(r.MsgID, lang)
+	otherData := map[string]interface{}{}
+	if len(args) > 0 {
+		for _, value := range args {
+			for k, v := range value {
+				otherData[k] = v
+			}
+		}
+	}
+	r.Msg = GetMsg(r.MsgID, lang, otherData)
 	ctx.JSON(http.StatusOK, r)
 	return
 }
 
-func (r Response) ResponseBadRequest(ctx *gin.Context) {
+func (r Response) ResponseBadRequest(ctx *gin.Context, args ...map[string]interface{}) {
 	locale, _ := ctx.Get("locale")
 	lang := locale.(string)
-	r.Msg = GetMsg(r.MsgID, lang)
+	otherData := map[string]interface{}{}
+	if len(args) > 0 {
+		for _, value := range args {
+			for k, v := range value {
+				otherData[k] = v
+			}
+		}
+	}
+	r.Msg = GetMsg(r.MsgID, lang, otherData)
 	ctx.JSON(http.StatusBadRequest, r)
 	return
 }
 
-func (r Response) ResponseUnauthorized(ctx *gin.Context) {
+func (r Response) ResponseUnauthorized(ctx *gin.Context, args ...map[string]interface{}) {
 	locale, _ := ctx.Get("locale")
 	lang := locale.(string)
-	r.Msg = GetMsg(r.MsgID, lang)
+	otherData := map[string]interface{}{}
+	if len(args) > 0 {
+		for _, value := range args {
+			for k, v := range value {
+				otherData[k] = v
+			}
+		}
+	}
+	r.Msg = GetMsg(r.MsgID, lang, otherData)
 	ctx.JSON(http.StatusUnauthorized, r)
 	return
 }
